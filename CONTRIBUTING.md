@@ -1,13 +1,36 @@
-# Contributing
+# Contributing to CoreLangDistribution 2.0
 
-This is an alpha research/devtool project. Before accepting outside contributions, the project should choose a final license.
+CoreLangDistribution 2.0 is an alpha research/devtool project released under the MIT License.
 
-Useful contributions after licensing:
+Contributions are welcome, especially when they improve reproducibility, documentation, benchmark coverage, portability, or the clarity of the claim boundary.
 
-- reproducible benchmark improvements;
-- clearer docs;
-- additional baseline adapters;
-- negative/adversarial tests;
-- CI portability fixes.
+## Useful contributions
 
-Do not submit claims that CLD2 always wins. Negative results are valuable.
+- Reproducible benchmark improvements
+- Clearer documentation
+- Additional baseline adapters
+- Negative/adversarial tests
+- CI portability fixes
+- Small examples and demo workflows
+- Bug reports with exact commands, environment details and logs
+
+## Claim boundary
+
+Do not submit claims that CLD2 always wins.
+
+CLD2 is not a generic compression algorithm and it is not a universal replacement for rsync, zsync, casync, OSTree, DVC, Docker/OCI or CDN systems.
+
+Negative results are valuable. Benchmarks where CLD2 is only equal, worse, or dataset-dependent should be preserved and documented honestly.
+
+## Contribution style
+
+Please prefer:
+
+- small, focused pull requests;
+- reproducible commands;
+- clear before/after benchmark data;
+- explicit notes about environment and limitations.
+
+## License
+
+By contributing, you agree that your contribution will be licensed under the MIT License.
