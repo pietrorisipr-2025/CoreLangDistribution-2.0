@@ -1,0 +1,62 @@
+[
+  {
+    "chunks": [
+      {
+        "chunk_id": "2dea84da162f492a7d8bf63062afc6a727324fe6b39cf675ccb5aad48f6bb65f",
+        "file_offset": 0,
+        "raw_len": 30
+      }
+    ],
+    "executable": false,
+    "file_hash": "2dea84da162f492a7d8bf63062afc6a727324fe6b39cf675ccb5aad48f6bb65f",
+    "mode": 420,
+    "mtime_ns": 1780513149322904905,
+    "path": "config.json",
+    "size": 30
+  },
+  {
+    "chunks": [
+      {
+        "chunk_id": "db3d0316a964e55facf8ca637a8f2bbb8579a5d666aa88ba01ea68b0b7e5ba79",
+        "file_offset": 0,
+        "raw_len": 4115
+      }
+    ],
+    "executable": false,
+    "file_hash": "db3d0316a964e55facf8ca637a8f2bbb8579a5d666aa88ba01ea68b0b7e5ba79",
+    "mode": 420,
+    "mtime_ns": 1780513149322831783,
+    "path": "data.txt",
+    "size": 4115
+  },
+  {
+    "chunks": [
+      {
+        "chunk_id": "b760c757abbe569ae66bcd3627f8efc56e89640ef390ba68ae9ee06a0354a747",
+        "file_offset": 0,
+        "raw_len": 21
+      }
+    ],
+    "executable": false,
+    "file_hash": "b760c757abbe569ae66bcd3627f8efc56e89640ef390ba68ae9ee06a0354a747",
+    "mode": 420,
+    "mtime_ns": 1780513149322752473,
+    "path": "hello.txt",
+    "size": 21
+  },
+  {
+    "chunks": [
+      {
+        "chunk_id": "17c89553848d751b8f8dc5a0c1a07344bf38547fbbedd037315c7d5905f23fc4",
+        "file_offset": 0,
+        "raw_len": 15
+      }
+    ],
+    "executable": false,
+    "file_hash": "17c89553848d751b8f8dc5a0c1a07344bf38547fbbedd037315c7d5905f23fc4",
+    "mode": 420,
+    "mtime_ns": 1780513149322976812,
+    "path": "new_file.txt",
+    "size": 15
+  }
+]

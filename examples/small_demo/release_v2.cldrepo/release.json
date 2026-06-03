@@ -1,0 +1,43 @@
+{
+  "chunker": {
+    "avg": 262144,
+    "fastcdc_stride": 16,
+    "fixed_size": 262144,
+    "max": 1048576,
+    "min": 65536,
+    "mode": "cdc"
+  },
+  "chunks": "chunks.idx.json",
+  "codec_policy": "auto",
+  "created_at": "2026-06-03T18:59:21Z",
+  "expires_at": null,
+  "files": "files.idx.json",
+  "metrics": {
+    "chunk_size_stats": {
+      "avg": 1045.25,
+      "count": 4,
+      "max": 4115,
+      "min": 15
+    },
+    "file_count": 4,
+    "logical_size": 4181,
+    "reused_chunks_within_repo": 0,
+    "storage_ratio": 0.027745,
+    "stored_bytes": 116,
+    "unique_chunk_count": 4
+  },
+  "not_before": null,
+  "packs": [
+    {
+      "hash": "809bb1c95ff521478a90024c3b9ecf7e0141159f474760a00f2c1a300bf0f264",
+      "pack_id": "pack-000000.cldpak",
+      "size": 116
+    }
+  ],
+  "release_id": "demo",
+  "release_seq": 2,
+  "root_hash": "d8a0f849e0904ead64679c03ed93ecccc435d508e56e824cec669989478d6d66",
+  "schema": "CoreLangDistribution/Release",
+  "tool": "CoreLangDistribution 2.0.0-alpha50.2",
+  "version": "2.0-alpha24"
+}

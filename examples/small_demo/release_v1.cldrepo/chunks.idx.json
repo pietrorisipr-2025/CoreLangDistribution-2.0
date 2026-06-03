@@ -1,0 +1,35 @@
+[
+  {
+    "chunk_id": "892ab22b3e81e673075b3a984177b45988dbd52ec4307719bf0bb198a2af0c92",
+    "codec": "raw",
+    "compressed_hash": "892ab22b3e81e673075b3a984177b45988dbd52ec4307719bf0bb198a2af0c92",
+    "compressed_len": 30,
+    "pack_id": "pack-000000.cldpak",
+    "pack_len": 30,
+    "pack_offset": 0,
+    "raw_hash": "892ab22b3e81e673075b3a984177b45988dbd52ec4307719bf0bb198a2af0c92",
+    "raw_len": 30
+  },
+  {
+    "chunk_id": "e2913830d0a366d644ddffe59f3ba484cf80eb4b61a8017ce3b1516a59dafe3e",
+    "codec": "zlib",
+    "compressed_hash": "d8398d89b05847442b12f647450658dec192e7b23194db09bc8fab72b9ad0945",
+    "compressed_len": 29,
+    "pack_id": "pack-000000.cldpak",
+    "pack_len": 29,
+    "pack_offset": 30,
+    "raw_hash": "e2913830d0a366d644ddffe59f3ba484cf80eb4b61a8017ce3b1516a59dafe3e",
+    "raw_len": 4097
+  },
+  {
+    "chunk_id": "6f5ea52dc0cef38963b2c00cec20ef10338e63d739ba648e9da0547785194a39",
+    "codec": "raw",
+    "compressed_hash": "6f5ea52dc0cef38963b2c00cec20ef10338e63d739ba648e9da0547785194a39",
+    "compressed_len": 21,
+    "pack_id": "pack-000000.cldpak",
+    "pack_len": 21,
+    "pack_offset": 59,
+    "raw_hash": "6f5ea52dc0cef38963b2c00cec20ef10338e63d739ba648e9da0547785194a39",
+    "raw_len": 21
+  }
+]

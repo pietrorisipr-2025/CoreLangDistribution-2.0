@@ -1,0 +1,5 @@
+scenario,CLD2_warm_bytes,zsync_http_bytes,casync_http_bytes,ostree_http_update_bytes,dvc_new_remote_bytes,oci_single_layer_new_bytes,oci_per_file_new_bytes
+normal,419,239827,10986,196227,67109107,196511,196733
+high-entropy,67108937,67342559,67160433,67130107,67109076,67130606,67130785
+small-files,2147,3515724,55116,34554,6874124,188165,73044
+heavy-change,26845855,27078879,26871717,26971645,67109040,26971886,26972139

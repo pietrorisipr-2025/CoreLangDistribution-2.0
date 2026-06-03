@@ -1,0 +1,59 @@
+{
+  "schema": "CLD2/alpha50_public_pack_benchmark_matrix",
+  "created_at": "2026-06-03T18:33:51.649966+00:00",
+  "versioning": {
+    "software_source": "alpha45.8",
+    "project_checkpoint": "alpha45.9",
+    "alpha46_alpha49": "external benchmark packs, not CLD2 software releases"
+  },
+  "metric_notes": {
+    "CLD2": "validated warm object/chunk bytes from alpha45.8 same-run consolidation",
+    "zsync": "HTTP bytes from alpha45.8 same-run zsync baseline",
+    "casync": "HTTP caidx/castr extract with local seed",
+    "ostree": "HTTP pull of v2 after client pulled v1, no static delta",
+    "DVC": "new bytes added to local DVC remote, not HTTP bytes",
+    "OCI": "deterministic tar.gz layer model, not real Docker daemon pull"
+  },
+  "rows": [
+    {
+      "scenario": "normal",
+      "CLD2_warm_bytes": 419,
+      "zsync_http_bytes": 239827,
+      "casync_http_bytes": 10986,
+      "ostree_http_update_bytes": 196227,
+      "dvc_new_remote_bytes": 67109107,
+      "oci_single_layer_new_bytes": 196511,
+      "oci_per_file_new_bytes": 196733
+    },
+    {
+      "scenario": "high-entropy",
+      "CLD2_warm_bytes": 67108937,
+      "zsync_http_bytes": 67342559,
+      "casync_http_bytes": 67160433,
+      "ostree_http_update_bytes": 67130107,
+      "dvc_new_remote_bytes": 67109076,
+      "oci_single_layer_new_bytes": 67130606,
+      "oci_per_file_new_bytes": 67130785
+    },
+    {
+      "scenario": "small-files",
+      "CLD2_warm_bytes": 2147,
+      "zsync_http_bytes": 3515724,
+      "casync_http_bytes": 55116,
+      "ostree_http_update_bytes": 34554,
+      "dvc_new_remote_bytes": 6874124,
+      "oci_single_layer_new_bytes": 188165,
+      "oci_per_file_new_bytes": 73044
+    },
+    {
+      "scenario": "heavy-change",
+      "CLD2_warm_bytes": 26845855,
+      "zsync_http_bytes": 27078879,
+      "casync_http_bytes": 26871717,
+      "ostree_http_update_bytes": 26971645,
+      "dvc_new_remote_bytes": 67109040,
+      "oci_single_layer_new_bytes": 26971886,
+      "oci_per_file_new_bytes": 26972139
+    }
+  ]
+}
