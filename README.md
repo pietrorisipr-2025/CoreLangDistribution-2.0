@@ -121,6 +121,14 @@ Alpha56.2.1 is a packaging hotfix after the alpha56.2 readability/installability
 
 Important version note: generated `.cldrepo` manifests may contain an internal repository-format `version` such as `2.0-alpha24`. That is a repository schema version, not the Python package version. The Python package version is the PEP 440 value `2.0.0a56.post2`; the core implementation baseline remains `2.0.0-alpha50.2`.
 
+## Support
+
+CLD2 is an independent alpha research/devtool project.
+
+If this work is useful to you, you can support it here:
+
+[Support CLD2 on Ko-fi](https://ko-fi.com/pietrorisi)
+
 ## License
 
 MIT License. See [LICENSE](LICENSE).
