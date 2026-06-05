@@ -724,7 +724,7 @@ def write_md_report(result: dict, path: str | Path) -> None:
     p = Path(path)
     p.parent.mkdir(parents=True, exist_ok=True)
     rows = _summary_rows(result)
-    title_version = result.get("version", "2.0-alpha28")
+    title_version = result.get("version", "2.0.0-alpha50.2")
     lines = [
         f"# CLD2 benchmark report — {result['scenario']} / {result.get('profile', 'custom')}",
         "",
@@ -799,7 +799,7 @@ def _write_matrix_reports(out: Path, matrix: dict) -> None:
     else:
         csv_path.write_text("", encoding="utf-8")
     lines = [
-        f"# CLD2 alpha24 benchmark matrix — profile {matrix['profile']}",
+        f"# CLD2 benchmark matrix - profile {matrix['profile']}",
         "",
         "| Scenario | Method | Pack bytes | Chunk reuse | Saved vs file-level raw |",
         "|---|---|---:|---:|---:|",
@@ -867,7 +867,7 @@ def run_bench(
 
     result = {
         "schema": "CoreLangDistribution/SyntheticBenchmark",
-        "version": "2.0-alpha32",
+        "version": "2.0.0-alpha50.2",
         "scenario": scenario,
         "profile": profile,
         "profile_options": profile_opts,
@@ -908,7 +908,7 @@ def run_real_bench(
 ) -> dict:
     """Benchmark a user-provided old/new directory pair.
 
-    This is the alpha24 bridge from synthetic demos to presentable reports for
+    This bridges synthetic demos to presentable reports for
     actual content trees. It does not modify the input directories.
     """
     v1 = Path(old_dir)
@@ -948,7 +948,7 @@ def run_real_bench(
             break
     result = {
         "schema": "CoreLangDistribution/RealPairBenchmark",
-        "version": "2.0-alpha32",
+        "version": "2.0.0-alpha50.2",
         "scenario": scenario_name,
         "profile": profile,
         "profile_options": profile_opts,
@@ -999,7 +999,7 @@ def write_fastcdc_tune_report(result: dict, path: str | Path) -> None:
     best_bytes = min((r for r in rows if r["method"] != "fixed"), key=lambda r: r["download_required_pack_bytes"], default=None)
     best_time = min((r for r in rows if r["method"] != "fixed"), key=lambda r: r["pack_total_seconds"], default=None)
     lines = [
-        f"# CLD2 alpha24 fastcdc tuning report — {result.get('scenario')}",
+        f"# CLD2 FastCDC tuning report - {result.get('scenario')}",
         "",
         "This report compares FastCDC large-file presets. Alpha20 FITS tuning selected `large-file-balanced` as the recommended default; this report is meant to show the time/transfer trade-off clearly.",
         "",
@@ -1118,7 +1118,7 @@ def run_fastcdc_tuning_matrix(
         }
     result = {
         "schema": "CoreLangDistribution/FastCDCTuningMatrix",
-        "version": "2.0-alpha32",
+        "version": "2.0.0-alpha50.2",
         "scenario": scenario_name,
         "profile": "fastcdc-tuning",
         "profiles": profile_list,
@@ -1235,7 +1235,7 @@ def run_largefile_variant_matrix(
             codec=codec,
             scenario_name=f"alpha24-{variant}",
             scenario_kind=variant,
-            scenario_note="Synthetic alpha24 negative/guardrail variant; same generated file base, different change pattern.",
+            scenario_note="Synthetic negative/guardrail variant; same generated file base, different change pattern.",
             cost_per_gb=cost_per_gb,
             download_count=download_count,
             currency=currency,
@@ -1249,7 +1249,7 @@ def run_largefile_variant_matrix(
                 shutil.rmtree(child, ignore_errors=True)
     matrix = {
         "schema": "CoreLangDistribution/LargeFileVariantMatrix",
-        "version": "2.0-alpha32",
+        "version": "2.0.0-alpha50.2",
         "file_size": file_size,
         "profiles": _parse_profile_list(profiles),
         "variants": variant_list,
@@ -1267,7 +1267,7 @@ def run_largefile_variant_matrix(
             w = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
             w.writeheader(); w.writerows(rows)
     lines = [
-        "# CLD2 alpha24 large-file guardrail variants",
+        "# CLD2 large-file guardrail variants",
         "",
         "These synthetic variants are not a replacement for the real FITS benchmark. They are guardrails showing that the same FastCDC profile behaves differently across change patterns.",
         "",
@@ -1336,7 +1336,7 @@ def run_bench_matrix(
         results.append(res)
     matrix = {
         "schema": "CoreLangDistribution/BenchmarkMatrix",
-        "version": "2.0-alpha32",
+        "version": "2.0.0-alpha50.2",
         "profile": profile,
         "chunker": chunker,
         "codec": codec,
@@ -1446,7 +1446,7 @@ def recommend_adaptive_policy(
     return {
         "ok": True,
         "schema": "CoreLangDistribution/AdaptivePolicyRecommendation",
-        "version": "2.0-alpha32",
+        "version": "2.0.0-alpha50.2",
         "scenario": tuning.get("scenario"),
         "decision_parameters": {
             "download_tolerance_ratio": download_tolerance_ratio,
@@ -1469,7 +1469,7 @@ def write_adaptive_policy_report(policy: dict, path: str | Path) -> None:
     rec = policy.get("recommendations", {})
     rows = policy.get("rows", [])
     lines = [
-        "# CLD2 alpha24 adaptive policy report",
+        "# CLD2 adaptive policy report",
         "",
         f"Scenario: `{policy.get('scenario')}`",
         "",
@@ -1550,7 +1550,7 @@ def run_adaptive_policy_bench(
     write_adaptive_policy_report(policy, policy_md)
     result = {
         "schema": "CoreLangDistribution/AdaptivePolicyBench",
-        "version": "2.0-alpha32",
+        "version": "2.0.0-alpha50.2",
         "ok": bool(policy.get("ok")),
         "tuning": tuning,
         "policy": policy,
@@ -1626,7 +1626,7 @@ def write_standalone_baselines_report(result: dict, path: str | Path) -> None:
     policy = result.get("adaptive_policy", {}).get("policy", {})
     rec = policy.get("recommendations", {})
     lines = [
-        f"# CLD2 alpha24 standalone baseline report — {result.get('scenario')}",
+        f"# CLD2 standalone baseline report - {result.get('scenario')}",
         "",
         "This report is meant for evaluating CoreLangDistribution as a standalone project.",
         "It places CLD2 fixed/FastCDC/adaptive-policy results next to serious baselines such as tar.zst and optional external tools.",
@@ -1772,7 +1772,7 @@ def run_standalone_baselines_bench(
 
     result = {
         "schema": "CoreLangDistribution/StandaloneBaselinesBenchmark",
-        "version": "2.0-alpha32",
+        "version": "2.0.0-alpha50.2",
         "ok": bool(policy_bench.get("ok")),
         "scenario": scenario_name,
         "scenario_kind": scenario_kind,
@@ -2031,7 +2031,7 @@ def run_heavy_change_matrix(
 
     matrix = {
         "schema": "CoreLangDistribution/HeavyChangeMatrix",
-        "version": "2.0-alpha32",
+        "version": "2.0.0-alpha50.2",
         "ok": all(s.get("ok") for s in scenario_summaries),
         "file_size": file_size,
         "profiles": _parse_profile_list(profiles),
@@ -2127,7 +2127,7 @@ def _alpha27_write_hybrid_report(result: dict, path: str | Path) -> None:
     rows = result.get("comparison_rows", [])
     rec = result.get("recommendations", {})
     lines = [
-        f"# CLD2 alpha27 hybrid planner report — {result.get('scenario')}",
+        f"# CLD2 hybrid planner report - {result.get('scenario')}",
         "",
         "This report compares CLD2 profiles across codecs and file-level fallbacks.",
         "",
@@ -2354,7 +2354,7 @@ def run_hybrid_planner_bench(
 
     result = {
         "schema": "CoreLangDistribution/HybridPlanner",
-        "version": "2.0-alpha32",
+        "version": "2.0.0-alpha50.2",
         "ok": all(x.get("ok") for x in per_codec),
         "scenario": scenario_name,
         "scenario_kind": scenario_kind,
@@ -2494,9 +2494,9 @@ def _alpha28_write_cost_report(result: dict, path: str | Path) -> None:
     rec = result.get("cost_aware_recommendations", {})
     rows = result.get("cost_rows", [])
     lines = [
-        f"# CLD2 alpha29 cost-aware planner report — {result.get('scenario')}",
+        f"# CLD2 cost-aware planner report - {result.get('scenario')}",
         "",
-        "This report refines alpha27/alpha28: the planner is no longer only byte-aware, it is also cost-aware and exposes break-even thresholds.",
+        "This report explains the cost-aware planner: it is byte-aware, cost-aware and exposes break-even thresholds.",
         "",
         "It estimates:",
         "",
@@ -2619,7 +2619,7 @@ def _alpha29_break_even_downloads(faster_or_cheaper_pack: dict | None, smaller_t
 
 
 def _alpha29_compute_break_even(enriched: list[dict], recommendations: dict) -> dict:
-    """Compute practical alpha29 break-even thresholds from alpha28 rows."""
+    """Compute practical break-even thresholds from cost-aware rows."""
     by_plan = {_alpha28_row_plan(r): r for r in enriched}
 
     def row_from_rec(key: str) -> dict | None:
@@ -2646,9 +2646,9 @@ def _alpha29_write_scenario_report(result: dict, path: str | Path) -> None:
     p = Path(path)
     scenarios = result.get("scenarios", {})
     lines = [
-        f"# CLD2 alpha29 cost-aware scenarios — {result.get('scenario')}",
+        f"# CLD2 cost-aware scenarios - {result.get('scenario')}",
         "",
-        "Alpha29 reuses one measured hybrid benchmark and rescales the same candidates for multiple download counts.",
+        "This report reuses one measured hybrid benchmark and rescales the same candidates for multiple download counts.",
         "",
         "## Parameters",
         "",
@@ -2734,7 +2734,7 @@ def make_light_zip(src_dir: str | Path, zip_out: str | Path, *, max_mb: float = 
     return {
         "ok": True,
         "schema": "CoreLangDistribution/LightZip",
-        "version": "2.0-alpha32",
+        "version": "2.0.0-alpha50.2",
         "src_dir": str(src),
         "zip_out": str(out),
         "files_included": len(files),
@@ -7506,7 +7506,7 @@ def run_zsync_baseline_pilot(
 
 
 def render_static_report(src_dir: str | Path, out_dir: str | Path, *, title: str = "CLD2 benchmark report", make_review: bool = False, max_mb: float = 10.0) -> dict:
-    """Render a dependency-free alpha32 static HTML/Markdown report from CLD2 benchmark outputs.
+    """Render a dependency-free static HTML/Markdown report from CLD2 benchmark outputs.
 
     Supports corpus benchmark directories first, and falls back to scenario planner summaries when available.
     """
@@ -7608,7 +7608,7 @@ def render_static_report(src_dir: str | Path, out_dir: str | Path, *, title: str
         report_files = sorted([p.relative_to(src).as_posix() for p in src.rglob("*") if p.is_file() and p.suffix.lower() in {".json", ".csv", ".md", ".txt"}])
         cards = [("Files", str(len(report_files)))]
         table_html = "<ul>" + "".join(f"<li><code>{escape(x)}</code></li>" for x in report_files[:200]) + "</ul>"
-        interpretation = ["Generic report directory: alpha32 could not find corpus_benchmark_result.json or cost_aware_scenarios_result.json."]
+        interpretation = ["Generic report directory: no recognized CLD2 benchmark result JSON was found."]
 
     card_html = "\n".join(f'<div class="card"><div class="card-value">{escape(value)}</div><div class="card-label">{escape(label)}</div></div>' for label, value in cards)
     interp_html = "\n".join(f"<p>{escape(x)}</p>" for x in interpretation)
@@ -7643,7 +7643,7 @@ def render_static_report(src_dir: str | Path, out_dir: str | Path, *, title: str
 <body>
 <header>
   <h1>{escape(title)}</h1>
-  <div class=\"sub\">CLD2 alpha32 static report · source: <code>{escape(str(src))}</code></div>
+  <div class=\"sub\">CLD2 static report · source: <code>{escape(str(src))}</code></div>
 </header>
 <section class=\"cards\">{card_html}</section>
 <section>
@@ -7654,7 +7654,7 @@ def render_static_report(src_dir: str | Path, out_dir: str | Path, *, title: str
   <h2>Interpretation guardrail</h2>
   {interp_html}
 </section>
-<footer>Generated by CoreLangDistribution 2.0 alpha32.</footer>
+<footer>Generated by CoreLangDistribution 2.0.</footer>
 </body>
 </html>
 """
@@ -7663,7 +7663,7 @@ def render_static_report(src_dir: str | Path, out_dir: str | Path, *, title: str
     (out / "report.md").write_text("\n".join(markdown_lines) + "\n", encoding="utf-8")
     manifest = {
         "schema": "CoreLangDistribution/StaticReport",
-        "version": "2.0-alpha32",
+        "version": "2.0.0-alpha50.2",
         "ok": True,
         "source_kind": source_kind,
         "src_dir": str(src),
@@ -7815,7 +7815,7 @@ def make_review_zip(src_dir: str | Path, zip_out: str | Path, *, max_mb: float =
             zf.write(p, p.relative_to(src).as_posix())
     manifest = {
         "schema": "CoreLangDistribution/ReviewZip",
-        "version": "2.0-alpha32",
+        "version": "2.0.0-alpha50.2",
         "src_dir": str(src),
         "zip_out": str(out),
         "files_included": len(files),
@@ -7848,7 +7848,7 @@ def cleanup_heavy_artifacts(path: str | Path, *, min_mb: float = 100.0, apply: b
     return {
         "ok": True,
         "schema": "CoreLangDistribution/CleanupHeavyArtifacts",
-        "version": "2.0-alpha32",
+        "version": "2.0.0-alpha50.2",
         "path": str(root),
         "dry_run": not apply,
         "min_mb": min_mb,
@@ -7932,7 +7932,7 @@ def run_cost_aware_planner_bench(
 
     result = {
         "schema": "CoreLangDistribution/CostAwarePlanner",
-        "version": "2.0-alpha32",
+        "version": "2.0.0-alpha50.2",
         "ok": bool(hybrid_summary.get("ok")),
         "scenario": scenario_name,
         "scenario_kind": scenario_kind,
@@ -8049,7 +8049,7 @@ def run_cost_aware_scenarios_bench(
         be = _alpha29_compute_break_even(rows, recs)
         sc = {
             "schema": "CoreLangDistribution/CostAwareScenario",
-            "version": "2.0-alpha32",
+            "version": "2.0.0-alpha50.2",
             "scenario": name,
             "download_count": count,
             "cost_rows": rows,
@@ -8062,7 +8062,7 @@ def run_cost_aware_scenarios_bench(
 
     result = {
         "schema": "CoreLangDistribution/CostAwareScenarios",
-        "version": "2.0-alpha32",
+        "version": "2.0.0-alpha50.2",
         "ok": bool(hybrid_summary.get("ok")),
         "scenario": scenario_name,
         "scenario_kind": scenario_kind,
@@ -8370,7 +8370,7 @@ def run_corpus_bench(
     inconclusive = sum(1 for r in rows if r.get("verdict") == "inconclusive")
     result = {
         "schema": "CoreLangDistribution/CorpusBenchmark",
-        "version": "2.0-alpha32",
+        "version": "2.0.0-alpha50.2",
         "ok": all(x.get("ok") for x in scenario_results),
         "purpose": "falsification-oriented corpus: identify where CLD2 wins, loses or ties versus tar.zst/file-level baselines under cost-aware scenarios",
         "file_size": file_size,

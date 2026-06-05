@@ -1,0 +1,12 @@
+{
+  "schema": "CLD2/alpha54_object_store_provider_request",
+  "code_baseline": "2.0.0-alpha50.2",
+  "provider_mode": "local-object-store-like",
+  "artifact_id": "demo/release_v2",
+  "repo_path": "object_store/repositories/demo/release_v2.cldrepo",
+  "install_path": "install/demo_release_v2",
+  "cache_path": "cache/provider_cache",
+  "expected_sha256": null,
+  "require_audit_install": true,
+  "require_digest_verification": true
+}

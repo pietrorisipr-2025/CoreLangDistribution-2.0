@@ -1,13 +1,26 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "corelangdistribution2-alpha"
-version = "2.0.0-alpha50.2"
-description = "CoreLangDistribution 2.0 alpha45.8 MinIO retry attach"
+version = "2.0.0a56.post2"
+description = "Experimental cost-aware warm-update distribution planner"
 license = { text = "MIT" }
 requires-python = ">=3.10"
 dependencies = ["cryptography>=41"]
 
+[project.scripts]
+cld2 = "cld2:main"
+
 [project.optional-dependencies]
 zstd = ["zstandard>=0.22"]
+
+[tool.setuptools]
+py-modules = ["cld2"]
+
+[tool.setuptools.packages.find]
+include = ["corelangdistribution2*"]
 
 [tool.ruff]
 line-length = 120

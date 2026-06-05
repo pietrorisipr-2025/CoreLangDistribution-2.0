@@ -1,16 +1,49 @@
 # CoreLangDistribution 2.0 (CLD2)
 
-**Status:** alpha / public review candidate 50.2  
-**Implementation baseline:** alpha50.2, derived from the validated alpha45.8 engine  
-**Generated:** 2026-06-03T19:24:58+00:00
+**Status:** alpha / public review candidate 56.2.1  
+**Python package version:** `2.0.0a56.post2`  
+**Implementation baseline:** `2.0.0-alpha50.2` core; alpha56.2.1 packaging hotfix  
+**Generated:** 2026-06-05
 
-CLD2 is an experimental **cost-aware update distribution planner** built around chunking, content reuse, object-store workflows and transparent benchmark reporting.
+CLD2 is an experimental **cost-aware warm-update distribution planner**. It packages versioned content into chunked, range-readable repositories so clients with an existing release/cache can reuse chunks instead of downloading the whole next release.
 
-It is **not** a new compression algorithm and it is not a universal replacement for rsync, zsync, casync, OSTree, DVC, Docker/OCI or CDN systems.
+It is **not** a new compression algorithm, not a CDN/cloud product, and not a universal replacement for rsync, zsync, casync, OSTree, DVC, Docker/OCI or mature artifact distribution systems.
+
+## Try it in 5 minutes
+
+Requirements:
+
+- Python 3.10+
+- `pip`
+
+From a fresh checkout:
+
+```bash
+python -m pip install -e .
+cld2 --version
+cld2 selftest
+python scripts/verify_release.py --fast
+python scripts/smoke_test.py
+```
+
+On Windows, use the same commands from PowerShell if `python` is on PATH. If your system uses the Python launcher, replace `python` with `py -3`.
+
+What this does:
+
+- installs the local package and the `cld2` command;
+- runs the embedded self-test;
+- checks the source tree manifest/import/dist hygiene;
+- runs a tiny demo that creates, compares, fetches and audits two releases, then cleans generated demo artifacts.
+
+For a full release-candidate check, run:
+
+```bash
+python scripts/verify_release.py
+```
 
 ## What CLD2 is for
 
-CLD2 is meant to explore update-heavy distribution cases where users already have a previous release/cache and the next release can reuse chunks/objects.
+CLD2 is meant to explore update-heavy distribution cases where users already have a previous release/cache and the next release can reuse chunks or objects.
 
 Useful target areas:
 
@@ -33,7 +66,7 @@ CLD2 is not:
 
 ## Current validated result
 
-The strongest validated result is the alpha45.8 fresh same-run comparison against zsync. CLD2 wins clearly in high-reuse cases and is roughly equal in adversarial cases.
+The strongest validated result is still the alpha45.8 same-run comparison against zsync. CLD2 wins clearly in high-reuse cases and is roughly equal in adversarial cases.
 
 | Scenario | zsync HTTP bytes | CLD2 warm bytes | Reading |
 |---|---:|---:|---|
@@ -42,38 +75,31 @@ The strongest validated result is the alpha45.8 fresh same-run comparison agains
 | small-files | 3,515,724 | 2,147 | CLD2 clearly lower transfer |
 | heavy-change | 27,078,879 | 26,845,855 | roughly equal/heavy-change |
 
-See [`docs/BENCHMARKS.md`](docs/BENCHMARKS.md) and [`docs/CLAIM_BOUNDARY.md`](docs/CLAIM_BOUNDARY.md).
+See [`docs/BENCHMARKS.md`](docs/BENCHMARKS.md), [`docs/BENCHMARK_SUMMARY_UPDATED_ALPHA55.md`](docs/BENCHMARK_SUMMARY_UPDATED_ALPHA55.md) and [`docs/CLAIM_BOUNDARY_ALPHA56.md`](docs/CLAIM_BOUNDARY_ALPHA56.md).
 
-## Quick start
+## Common commands
 
-Run the built-in self-test:
+```bash
+cld2 pack INPUT_DIR --out release.cldrepo --release-id demo --release-seq 1 --force
+cld2 inspect release.cldrepo
+cld2 verify release.cldrepo --deep
+cld2 fetch release.cldrepo --install install_dir --cache cache_dir
+cld2 audit-install release.cldrepo --install install_dir
+cld2 diff old.cldrepo new.cldrepo --out diff.json
+```
+
+The source checkout can also be used without installation:
 
 ```bash
 python cld2.py selftest
 python cld2.py dist-check . --run-selftest
-```
-
-Create and compare two tiny releases:
-
-```bash
-python examples/small_demo/make_demo_data.py
-python cld2.py pack examples/small_demo/release_v1 --out examples/small_demo/release_v1.cldrepo --release-id demo --release-seq 1 --force
-python cld2.py pack examples/small_demo/release_v2 --out examples/small_demo/release_v2.cldrepo --release-id demo --release-seq 2 --force
-python cld2.py diff examples/small_demo/release_v1.cldrepo examples/small_demo/release_v2.cldrepo --out examples/small_demo/diff.json
-python cld2.py fetch examples/small_demo/release_v2.cldrepo --install examples/small_demo/install_v2 --cache examples/small_demo/cache
-python cld2.py audit-install examples/small_demo/release_v2.cldrepo examples/small_demo/install_v2
-```
-
-Or run the smoke test:
-
-```bash
 python scripts/smoke_test.py
 ```
 
-PowerShell:
+To keep generated demo releases/install/cache for inspection:
 
-```powershell
-python .\scripts\smoke_test.py
+```bash
+python scripts/smoke_test.py --keep-demo
 ```
 
 ## Repository layout
@@ -81,23 +107,19 @@ python .\scripts\smoke_test.py
 ```text
 cld2.py                  CLI entry point
 corelangdistribution2/   reference implementation
-tests/                   minimal tests
-docs/                    public docs and benchmark summaries
+tests/                   focused regression/self-test coverage
+docs/                    public docs, benchmarks and claim boundary
 data/                    benchmark matrix data
 examples/small_demo/     tiny local demo
-scripts/                 smoke/manifest helpers
+scripts/                 smoke, manifest and release verification helpers
 .github/workflows/       CI self-test workflow
 ```
 
-## Support
+## Public review notes
 
-CLD2 is free and MIT-licensed.
+Alpha56.2.1 is a packaging hotfix after the alpha56.2 readability/installability polish pass. It does not change the core transfer model or introduce new benchmark claims.
 
-If you find this project useful and want to support future development, you can do so here:
-
-[Support development on Ko-fi](https://ko-fi.com/pietrorisi)
-
-Support is optional and does not affect access to the code, releases or documentation.
+Important version note: generated `.cldrepo` manifests may contain an internal repository-format `version` such as `2.0-alpha24`. That is a repository schema version, not the Python package version. The Python package version is the PEP 440 value `2.0.0a56.post2`; the core implementation baseline remains `2.0.0-alpha50.2`.
 
 ## License
 
@@ -105,4 +127,10 @@ MIT License. See [LICENSE](LICENSE).
 
 ## Validation status
 
-This alpha50.2 candidate was checked with `selftest`, `dist-check --run-selftest`, and `scripts/smoke_test.py`. See `TEST_RESULTS_ALPHA50_2_GITHUB_REPO_CANDIDATE_MIT.json`.
+This candidate is designed to be checked with:
+
+```bash
+python scripts/verify_release.py
+```
+
+The alpha56.1 predecessor was checked with `selftest`, `dist-check --run-selftest`, and `scripts/smoke_test.py`; see `TEST_RESULTS_ALPHA56_1_POLISH.json`.

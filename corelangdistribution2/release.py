@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from . import __version__
+from . import __core_baseline__, __version__
 from .selftest import run_selftest
 
 REQUIRED_FILES = [
@@ -34,10 +34,13 @@ def _read(path: Path) -> str:
 
 
 def _pep440_alpha(version: str) -> str:
-    m = re.fullmatch(r"(\d+)\.(\d+)\.(\d+)-alpha(\d+)", version)
+    m = re.fullmatch(r"(\d+)\.(\d+)\.(\d+)-alpha(\d+)(?:\.(\d+))?", version)
     if not m:
         return version
-    return f"{m.group(1)}.{m.group(2)}.{m.group(3)}a{m.group(4)}"
+    out = f"{m.group(1)}.{m.group(2)}.{m.group(3)}a{m.group(4)}"
+    if m.group(5):
+        out += f".post{m.group(5)}"
+    return out
 
 
 def dist_check(root: str | Path = ".", *, run_tests: bool = False) -> dict[str, Any]:
@@ -88,8 +91,16 @@ def dist_check(root: str | Path = ".", *, run_tests: bool = False) -> dict[str, 
                 errors.append(f"pyproject version {m.group(1)!r} does not match package version {__version__!r} ({expected!r})")
 
     readme = base / "README.md"
-    if readme.exists() and "alpha24" not in _read(readme).lower():
-        warnings.append("README.md does not mention alpha24")
+    if readme.exists():
+        readme_text = _read(readme).lower()
+        if __version__.lower() not in readme_text:
+            warnings.append(f"README.md does not mention package version {__version__}")
+        if __core_baseline__.lower() not in readme_text:
+            warnings.append(f"README.md does not mention core baseline {__core_baseline__}")
+        if "new compression algorithm" not in readme_text:
+            warnings.append("README.md does not state the compression-algorithm claim boundary")
+        if "claim_boundary" not in readme_text:
+            warnings.append("README.md does not link to a claim boundary document")
 
     compile_errors: list[str] = []
     for py in sorted(base.rglob("*.py")):
@@ -218,17 +229,17 @@ def beta_report(
         "benchmark_error": bench_error,
         "benchmark_reports": (bench or {}).get("reports") if isinstance(bench, dict) else None,
         "limitations": [
-            "This alpha24 report is a local readiness dossier, not a production certification.",
+            "This report is a local readiness dossier, not a production certification.",
             "It does not replace large 10-50 GB corpus tests, real Windows/macOS/Linux validation, or real CDN tests.",
             "Cost projections are byte-transfer estimates only and exclude request fees, cache hit rates, taxes and negotiated CDN tiers.",
         ],
     }
 
-    json_path = out / "CLD2_ALPHA17_BETA_READINESS_REPORT.json"
+    json_path = out / "CLD2_BETA_READINESS_REPORT.json"
     json_path.write_text(json.dumps(report, indent=2, sort_keys=True, ensure_ascii=False) + "\n", encoding="utf-8")
 
     lines = [
-        "# CoreLangDistribution 2.0 alpha24 — Beta readiness dossier",
+        "# CoreLangDistribution 2.0 - Beta readiness dossier",
         "",
         f"Version: `{__version__}`",
         "",
@@ -310,7 +321,7 @@ def beta_report(
         f"- JSON report: `{json_path.name}`",
         "- Benchmark artifacts: `benchmark_matrix/`",
     ]
-    md_path = out / "CLD2_ALPHA17_BETA_READINESS_REPORT.md"
+    md_path = out / "CLD2_BETA_READINESS_REPORT.md"
     md_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
     report["reports"] = {"json": str(json_path), "markdown": str(md_path)}
     json_path.write_text(json.dumps(report, indent=2, sort_keys=True, ensure_ascii=False) + "\n", encoding="utf-8")

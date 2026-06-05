@@ -1,0 +1,23 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+.venv/
+venv/
+.env
+*.log
+.DS_Store
+
+# CLD2 generated demo/test outputs
+*.cldrepo/
+examples/small_demo/release_v1/
+examples/small_demo/release_v2/
+examples/small_demo/install_v2/
+examples/small_demo/cache/
+examples/small_demo/diff.json
+
+# Large local benchmark outputs
+17/
+per test/
+*_REVIEW.zip
+*_UPLOAD.zip

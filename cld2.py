@@ -20,7 +20,7 @@ def emit(obj) -> None:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(prog="cld2", description="CoreLangDistribution 2.0 alpha50.2 CLI")
+    p = argparse.ArgumentParser(prog="cld2", description="CoreLangDistribution 2.0 CLI")
     p.add_argument("--version", action="version", version=__version__)
     sub = p.add_subparsers(dest="cmd", required=True)
 
@@ -47,9 +47,9 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("repo")
     s.add_argument("--deep", action="store_true")
     s.add_argument("--trust-key", help="Verify signatures.json with a public Ed25519 trust key")
-    s.add_argument("--trusted-root", help="Verify release through an alpha28 trusted-root policy JSON")
+    s.add_argument("--trusted-root", help="Verify release through a trusted-root policy JSON")
 
-    s = sub.add_parser("release-check", help="Run alpha28 release hygiene/cross-platform checks")
+    s = sub.add_parser("release-check", help="Run release hygiene and cross-platform checks")
     s.add_argument("repo")
     s.add_argument("--deep", action="store_true", help="Also verify/decompress every chunk")
     s.add_argument("--json-out", help="Optional path to write the same report JSON")
@@ -73,7 +73,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("old_repo")
     s.add_argument("new_repo")
     s.add_argument("--out")
-    s.add_argument("--patch-plan-out", help="Write an enforceable alpha11 patch plan JSON")
+    s.add_argument("--patch-plan-out", help="Write an enforceable patch plan JSON")
 
     s = sub.add_parser("fetch", help="Install/fetch all files from a local or HTTP repo")
     s.add_argument("repo")
@@ -84,29 +84,29 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--allow-downgrade", action="store_true", help="Allow installing a lower release sequence")
     s.add_argument("--patch-plan", help="Constrain downloads to chunks authorized by a patch plan")
     s.add_argument("--trust-key", help="Require and verify signatures.json before install using a public key")
-    s.add_argument("--trusted-root", help="Require and verify release through an alpha28 trusted-root policy JSON")
+    s.add_argument("--trusted-root", help="Require and verify release through a trusted-root policy JSON")
     s.add_argument("--mirror", action="append", default=[], help="Additional HTTP mirror/base URL for pack range reads; repeatable")
     s.add_argument("--mirror-policy", choices=["ordered", "hedged"], default="ordered", help="ordered tries mirrors in order; hedged races primary against first mirror")
     s.add_argument("--hedge-delay-ms", type=int, default=0, help="Delay before launching hedged mirror request")
     s.add_argument("--fail-after-chunks", type=int, help=argparse.SUPPRESS)
     s.add_argument("--http-retries", type=int, default=3, help="HTTP retry attempts for metadata/range reads")
     s.add_argument("--http-backoff", type=float, default=0.05, help="Initial HTTP retry backoff in seconds")
-    s.add_argument("--parallel", type=int, default=1, help="Parallel chunk prefetch workers; 1 keeps alpha8 serial behavior")
+    s.add_argument("--parallel", type=int, default=1, help="Parallel chunk prefetch workers; 1 keeps serial behavior")
     s.add_argument("--mirror-blacklist-threshold", type=int, default=0, help="Temporarily deprioritize a mirror after N chunk failures; 0 disables")
     s.add_argument("--mirror-blacklist-seconds", type=float, default=1.0, help="Temporary in-memory mirror blacklist duration")
     s.add_argument("--bandwidth-limit", default="0", help="Optional cooperative bandwidth cap, e.g. 2MiB; 0 disables")
     s.add_argument("--mirror-state", help="Persist/load mirror scores in this JSON file")
     s.add_argument("--stale-lock-seconds", type=float, default=3600.0, help="Treat install locks older than this as stale")
 
-    s = sub.add_parser("keygen", help="Generate an alpha28 Ed25519 signing key and public trust key")
+    s = sub.add_parser("keygen", help="Generate an Ed25519 signing key and public trust key")
     s.add_argument("--out", required=True)
     s.add_argument("--pub-out", help="Where to write the public trust key JSON; default: <out>.pub.json")
 
-    s = sub.add_parser("sign", help="Sign a local repo with an alpha28 Ed25519 private key")
+    s = sub.add_parser("sign", help="Sign a local repo with an Ed25519 private key")
     s.add_argument("repo")
     s.add_argument("--key", required=True)
 
-    s = sub.add_parser("root-init", help="Create an alpha28 trusted-root policy from one or more public keys")
+    s = sub.add_parser("root-init", help="Create a trusted-root policy from one or more public keys")
     s.add_argument("--out", required=True)
     s.add_argument("--key", action="append", required=True, help="Public key JSON to trust; repeatable")
     s.add_argument("--root-id", default="default")
@@ -181,18 +181,18 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--chunker", choices=["fixed", "cdc", "fastcdc", "gear", "both"], default="both")
     s.add_argument("--codec", choices=["auto", "zstd", "zlib", "raw", "none"], default="auto")
 
-    s = sub.add_parser("selftest", help="Run alpha28 embedded in-process smoke tests")
+    s = sub.add_parser("selftest", help="Run embedded in-process smoke tests")
     s.add_argument("--full", action="store_true", help="Also run the quick synthetic benchmark")
     s.add_argument("--keep-workdir", action="store_true", help="Keep temporary work directory for debugging")
     s.add_argument("--json-out", help="Write selftest report JSON")
 
-    s = sub.add_parser("dist-check", help="Check release ZIP/tree hygiene before distributing alpha28")
+    s = sub.add_parser("dist-check", help="Check release ZIP/tree hygiene before distribution")
     s.add_argument("path", nargs="?", default=".")
     s.add_argument("--run-selftest", action="store_true", help="Also run embedded selftest")
     s.add_argument("--json-out", help="Write dist-check report JSON")
 
 
-    s = sub.add_parser("beta-report", help="Create an alpha28 beta-readiness dossier with dist-check, optional selftest and benchmark matrix")
+    s = sub.add_parser("beta-report", help="Create a beta-readiness dossier with dist-check, optional selftest and benchmark matrix")
     s.add_argument("--path", default=".", help="Source tree to check; default current directory")
     s.add_argument("--out-dir", required=True)
     s.add_argument("--skip-selftest", action="store_true")
@@ -218,7 +218,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--scenario-kind", help="Optional scenario label, e.g. large-file-middle-insert or random-worstcase")
     s.add_argument("--scenario-note", help="Optional human-readable note stored in report metadata")
 
-    s = sub.add_parser("bench-fastcdc-tune", help="Run alpha28 large-file fastcdc tuning matrix on a real old/new pair")
+    s = sub.add_parser("bench-fastcdc-tune", help="Run a large-file FastCDC tuning matrix on a real old/new pair")
     s.add_argument("--old-dir", required=True, help="Previous release/content directory")
     s.add_argument("--new-dir", required=True, help="New release/content directory")
     s.add_argument("--out-dir", required=True)
@@ -236,7 +236,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--no-fixed", action="store_true", help="Do not include fixed 1MiB baseline")
 
 
-    s = sub.add_parser("bench-adaptive-policy", help="Run alpha28 tuning matrix and choose fixed/balanced/large by transparent policy rules")
+    s = sub.add_parser("bench-adaptive-policy", help="Run a tuning matrix and choose fixed/balanced/large by transparent policy rules")
     s.add_argument("--old-dir", required=True, help="Previous release/content directory")
     s.add_argument("--new-dir", required=True, help="New release/content directory")
     s.add_argument("--out-dir", required=True)
@@ -256,7 +256,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--fixed-close-ratio", type=float, default=0.10, help="Choose fixed if it is within this ratio of best transfer and faster")
 
 
-    s = sub.add_parser("bench-standalone-baselines", help="Run alpha28 standalone comparative benchmark with tar.zst and optional rsync/zsync/casync external baselines")
+    s = sub.add_parser("bench-standalone-baselines", help="Run standalone comparative benchmark with tar.zst and optional rsync/zsync/casync external baselines")
     s.add_argument("--old-dir", required=True, help="Previous release/content directory")
     s.add_argument("--new-dir", required=True, help="New release/content directory")
     s.add_argument("--out-dir", required=True)
@@ -281,7 +281,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 
-    s = sub.add_parser("bench-cost-aware-planner", help="Run alpha29 cost-aware planner: transfer cost + one-time pack cost")
+    s = sub.add_parser("bench-cost-aware-planner", help="Run cost-aware planner: transfer cost + one-time pack cost")
     s.add_argument("--old-dir", required=True)
     s.add_argument("--new-dir", required=True)
     s.add_argument("--out-dir", required=True)
@@ -304,7 +304,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--download-tolerance-ratio", type=float, default=0.10)
     s.add_argument("--download-tolerance-bytes", type=int, default=268435456)
 
-    s = sub.add_parser("bench-cost-aware-scenarios", help="Run alpha29 cost-aware planner once, then rescore internal/public/massive scenarios and compute break-even downloads")
+    s = sub.add_parser("bench-cost-aware-scenarios", help="Run cost-aware planner once, then rescore internal/public/massive scenarios and compute break-even downloads")
     s.add_argument("--old-dir", required=True)
     s.add_argument("--new-dir", required=True)
     s.add_argument("--out-dir", required=True)
@@ -332,7 +332,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--make-review-zip", action="store_true", help="Also write a compact AI/human review ZIP with only high-value result/report files and no generated repo metadata")
     s.add_argument("--light-zip-max-mb", type=float, default=50.0)
 
-    s = sub.add_parser("bench-corpus", help="Run alpha31.1 corpus benchmark/falsification matrix across favorable and adversarial scenarios")
+    s = sub.add_parser("bench-corpus", help="Run corpus benchmark/falsification matrix across favorable and adversarial scenarios")
     s.add_argument("--out-dir", required=True)
     s.add_argument("--corpus", default="localized-large,distributed-large,append-only-log,many-small-files,high-entropy-rewrite,rename-move")
     s.add_argument("--file-size", default="4MiB")
@@ -345,7 +345,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--cost-per-gb", type=float, default=0.05)
     s.add_argument("--currency", default="USD")
     s.add_argument("--pack-cost-per-hour", type=float, default=25.0)
-    s.add_argument("--generate-tar-zst", action="store_true", default=True, help="Generate tar.zst baselines for each corpus scenario (default in alpha31.1)")
+    s.add_argument("--generate-tar-zst", action="store_true", default=True, help="Generate tar.zst baselines for each corpus scenario")
     s.add_argument("--no-generate-tar-zst", action="store_false", dest="generate_tar_zst", help="Skip tar.zst baselines for faster smoke tests")
     s.add_argument("--keep-heavy", action="store_true", help="Keep generated repos/packs inside scenario outputs; default prunes heavy internals after collecting reports")
     s.add_argument("--make-review-zip", action="store_true")
@@ -361,14 +361,14 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--zip-out", required=True)
     s.add_argument("--max-mb", type=float, default=10.0)
 
-    s = sub.add_parser("render-report", help="Render an alpha32 static HTML/Markdown report from corpus or scenario benchmark results")
+    s = sub.add_parser("render-report", help="Render a static HTML/Markdown report from corpus or scenario benchmark results")
     s.add_argument("--src-dir", required=True)
     s.add_argument("--out-dir", required=True)
     s.add_argument("--title", default="CLD2 benchmark report")
     s.add_argument("--make-review-zip", action="store_true", help="Also create a compact review ZIP of the rendered report directory")
     s.add_argument("--max-mb", type=float, default=10.0)
 
-    s = sub.add_parser("bench-network-pilot", help="Run alpha33 local HTTP Range/ETag pilot with pack, fetch, cache reuse and static report")
+    s = sub.add_parser("bench-network-pilot", help="Run local HTTP Range/ETag pilot with pack, fetch, cache reuse and static report")
     s.add_argument("--out-dir", required=True)
     s.add_argument("--file-size", default="8MiB")
     s.add_argument("--bind", default="127.0.0.1")
@@ -386,11 +386,11 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--cld2-attach-retries", type=int, default=4, help="Retry CLD2 MinIO attach matrix when object store is temporarily unwritable")
     s.add_argument("--cld2-attach-backoff", type=float, default=2.0, help="Base seconds for CLD2 MinIO attach retry backoff")
     s.add_argument("--make-review-zip", action="store_true")
-    s.add_argument("--keep-heavy", action="store_true", help="Keep repos/install/cache in the output; default keeps them too for reproducibility in alpha33 smoke")
+    s.add_argument("--keep-heavy", action="store_true", help="Keep repos/install/cache in the output; default keeps them for reproducibility")
     s.add_argument("--max-mb", type=float, default=10.0)
 
 
-    s = sub.add_parser("bench-mirror-pilot", help="Run alpha34 local HTTP mirror/fallback robustness pilot")
+    s = sub.add_parser("bench-mirror-pilot", help="Run local HTTP mirror/fallback robustness pilot")
     s.add_argument("--out-dir", required=True)
     s.add_argument("--file-size", default="8MiB")
     s.add_argument("--bind", default="127.0.0.1")
@@ -418,12 +418,12 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--max-mb", type=float, default=10.0)
 
 
-    s = sub.add_parser("bench-object-store-pilot", help="Run alpha35 local object-store/S3-style bucket layout pilot")
+    s = sub.add_parser("bench-object-store-pilot", help="Run local object-store/S3-style bucket layout pilot")
     s.add_argument("--out-dir", required=True)
     s.add_argument("--file-size", default="8MiB")
     s.add_argument("--bind", default="127.0.0.1")
     s.add_argument("--port", type=int, default=0, help="0 chooses an ephemeral local port")
-    s.add_argument("--bucket", default="cld2-alpha35-bucket")
+    s.add_argument("--bucket", default="cld2-demo-bucket")
     s.add_argument("--prefix", default="releases")
     s.add_argument("--codec", choices=["auto", "zstd", "zlib", "raw", "none"], default="zstd")
     s.add_argument("--chunker", choices=["fixed", "cdc", "fastcdc", "gear"], default="fastcdc")
@@ -442,12 +442,12 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--max-mb", type=float, default=10.0)
 
 
-    s = sub.add_parser("bench-signed-url-pilot", help="Run alpha36 local signed-prefix URL policy pilot")
+    s = sub.add_parser("bench-signed-url-pilot", help="Run local signed-prefix URL policy pilot")
     s.add_argument("--out-dir", required=True)
     s.add_argument("--file-size", default="8MiB")
     s.add_argument("--bind", default="127.0.0.1")
     s.add_argument("--port", type=int, default=0, help="0 chooses an ephemeral local port")
-    s.add_argument("--bucket", default="cld2-alpha36-bucket")
+    s.add_argument("--bucket", default="cld2-demo-bucket")
     s.add_argument("--prefix", default="releases")
     s.add_argument("--ttl-seconds", type=int, default=3600)
     s.add_argument("--codec", choices=["auto", "zstd", "zlib", "raw", "none"], default="zstd")
@@ -467,15 +467,15 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--max-mb", type=float, default=10.0)
 
 
-    s = sub.add_parser("bench-minio-pilot", help="Run alpha37 MinIO/S3-compatible pilot through the MinIO mc CLI")
+    s = sub.add_parser("bench-minio-pilot", help="Run MinIO/S3-compatible pilot through the MinIO mc CLI")
     s.add_argument("--out-dir", required=True)
     s.add_argument("--file-size", default="8MiB")
     s.add_argument("--endpoint", default="", help="MinIO/S3 endpoint, e.g. http://127.0.0.1:9000")
     s.add_argument("--access-key", default="")
     s.add_argument("--secret-key", default="")
-    s.add_argument("--bucket", default="cld2-alpha37-bucket")
+    s.add_argument("--bucket", default="cld2-demo-bucket")
     s.add_argument("--prefix", default="releases")
-    s.add_argument("--alias", default="cld2alpha37")
+    s.add_argument("--alias", default="cld2demo")
     s.add_argument("--mc-path", default="mc")
     s.add_argument("--public-base-url", default="", help="Base public URL for anonymous GET, default endpoint/bucket")
     s.add_argument("--preflight-only", action="store_true")
@@ -497,15 +497,15 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--max-mb", type=float, default=10.0)
 
 
-    s = sub.add_parser("bench-minio-robustness", help="Run alpha38 MinIO cold/warm robustness report")
+    s = sub.add_parser("bench-minio-robustness", help="Run MinIO cold/warm robustness report")
     s.add_argument("--out-dir", required=True)
     s.add_argument("--file-size", default="8MiB")
     s.add_argument("--endpoint", default="", help="MinIO/S3 endpoint, e.g. http://127.0.0.1:9000")
     s.add_argument("--access-key", default="")
     s.add_argument("--secret-key", default="")
-    s.add_argument("--bucket", default="cld2-alpha38-bucket")
+    s.add_argument("--bucket", default="cld2-demo-bucket")
     s.add_argument("--prefix", default="releases")
-    s.add_argument("--alias", default="cld2alpha38")
+    s.add_argument("--alias", default="cld2demo")
     s.add_argument("--mc-path", default="mc")
     s.add_argument("--public-base-url", default="")
     s.add_argument("--preflight-only", action="store_true")
@@ -527,15 +527,15 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--max-mb", type=float, default=10.0)
 
 
-    s = sub.add_parser("bench-minio-full-baseline", help="Run alpha39 MinIO full-object baseline + cost model")
+    s = sub.add_parser("bench-minio-full-baseline", help="Run MinIO full-object baseline + cost model")
     s.add_argument("--out-dir", required=True)
     s.add_argument("--file-size", default="8MiB")
     s.add_argument("--endpoint", default="", help="MinIO/S3 endpoint, e.g. http://127.0.0.1:9000")
     s.add_argument("--access-key", default="")
     s.add_argument("--secret-key", default="")
-    s.add_argument("--bucket", default="cld2-alpha39-bucket")
+    s.add_argument("--bucket", default="cld2-demo-bucket")
     s.add_argument("--prefix", default="releases")
-    s.add_argument("--alias", default="cld2alpha39")
+    s.add_argument("--alias", default="cld2demo")
     s.add_argument("--mc-path", default="mc")
     s.add_argument("--public-base-url", default="")
     s.add_argument("--preflight-only", action="store_true")
@@ -560,7 +560,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--max-mb", type=float, default=10.0)
 
 
-    s = sub.add_parser("bench-minio-cost-matrix", help="Run alpha40 MinIO cost matrix across corpus scenarios")
+    s = sub.add_parser("bench-minio-cost-matrix", help="Run MinIO cost matrix across corpus scenarios")
     s.add_argument("--out-dir", required=True)
     s.add_argument("--file-size", default="64MiB")
     s.add_argument("--scenarios", default="normal,high-entropy,small-files", help="Comma-separated: normal,high-entropy,small-files,heavy-change")
@@ -568,9 +568,9 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--endpoint", default="", help="MinIO/S3 endpoint, e.g. http://127.0.0.1:9000")
     s.add_argument("--access-key", default="")
     s.add_argument("--secret-key", default="")
-    s.add_argument("--bucket", default="cld2-alpha40-bucket")
+    s.add_argument("--bucket", default="cld2-demo-bucket")
     s.add_argument("--prefix", default="releases")
-    s.add_argument("--alias", default="cld2alpha40")
+    s.add_argument("--alias", default="cld2demo")
     s.add_argument("--mc-path", default="mc")
     s.add_argument("--public-base-url", default="")
     s.add_argument("--preflight-only", action="store_true")
@@ -595,7 +595,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--max-mb", type=float, default=10.0)
 
 
-    s = sub.add_parser("bench-anti-cherrypick-report", help="Run alpha41 MinIO matrix + anti-cherry-picking claims report")
+    s = sub.add_parser("bench-anti-cherrypick-report", help="Run MinIO matrix + anti-cherry-picking claims report")
     s.add_argument("--out-dir", required=True)
     s.add_argument("--file-size", default="64MiB")
     s.add_argument("--scenarios", default="normal,high-entropy,small-files,heavy-change")
@@ -603,9 +603,9 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--endpoint", default="", help="MinIO/S3 endpoint, e.g. http://127.0.0.1:9000")
     s.add_argument("--access-key", default="")
     s.add_argument("--secret-key", default="")
-    s.add_argument("--bucket", default="cld2-alpha41-bucket")
+    s.add_argument("--bucket", default="cld2-demo-bucket")
     s.add_argument("--prefix", default="releases")
-    s.add_argument("--alias", default="cld2alpha41")
+    s.add_argument("--alias", default="cld2demo")
     s.add_argument("--mc-path", default="mc")
     s.add_argument("--public-base-url", default="")
     s.add_argument("--preflight-only", action="store_true")
@@ -632,7 +632,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--max-mb", type=float, default=10.0)
 
 
-    s = sub.add_parser("bench-github-report", help="Run alpha42 GitHub/vetrina technical report generator")
+    s = sub.add_parser("bench-github-report", help="Run GitHub/vetrina technical report generator")
     s.add_argument("--out-dir", required=True)
     s.add_argument("--file-size", default="64MiB")
     s.add_argument("--scenarios", default="normal,high-entropy,small-files,heavy-change")
@@ -640,9 +640,9 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--endpoint", default="", help="MinIO/S3 endpoint, e.g. http://127.0.0.1:9000")
     s.add_argument("--access-key", default="")
     s.add_argument("--secret-key", default="")
-    s.add_argument("--bucket", default="cld2-alpha42-bucket")
+    s.add_argument("--bucket", default="cld2-demo-bucket")
     s.add_argument("--prefix", default="releases")
-    s.add_argument("--alias", default="cld2alpha42")
+    s.add_argument("--alias", default="cld2demo")
     s.add_argument("--mc-path", default="mc")
     s.add_argument("--public-base-url", default="")
     s.add_argument("--preflight-only", action="store_true")
@@ -668,7 +668,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--max-mb", type=float, default=10.0)
 
 
-    s = sub.add_parser("bench-comparison-harness", help="Run alpha43 baseline tools preflight + comparison research pack")
+    s = sub.add_parser("bench-comparison-harness", help="Run baseline tools preflight + comparison research pack")
     s.add_argument("--out-dir", required=True)
     s.add_argument("--file-size", default="64MiB")
     s.add_argument("--scenarios", default="normal,high-entropy,small-files,heavy-change")
@@ -676,9 +676,9 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--endpoint", default="", help="MinIO/S3 endpoint, e.g. http://127.0.0.1:9000")
     s.add_argument("--access-key", default="")
     s.add_argument("--secret-key", default="")
-    s.add_argument("--bucket", default="cld2-alpha43-bucket")
+    s.add_argument("--bucket", default="cld2-demo-bucket")
     s.add_argument("--prefix", default="releases")
-    s.add_argument("--alias", default="cld2alpha43")
+    s.add_argument("--alias", default="cld2demo")
     s.add_argument("--mc-path", default="mc")
     s.add_argument("--public-base-url", default="")
     s.add_argument("--preflight-only", action="store_true")
@@ -705,7 +705,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--max-mb", type=float, default=10.0)
 
 
-    s = sub.add_parser("bench-rsync-baseline", help="Run alpha44 rsync direct baseline against CLD2 MinIO matrix")
+    s = sub.add_parser("bench-rsync-baseline", help="Run rsync direct baseline against CLD2 MinIO matrix")
     s.add_argument("--out-dir", required=True)
     s.add_argument("--file-size", default="64MiB")
     s.add_argument("--scenarios", default="normal,high-entropy,small-files,heavy-change")
@@ -715,9 +715,9 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--endpoint", default="", help="MinIO/S3 endpoint, e.g. http://127.0.0.1:9000")
     s.add_argument("--access-key", default="")
     s.add_argument("--secret-key", default="")
-    s.add_argument("--bucket", default="cld2-alpha44-bucket")
+    s.add_argument("--bucket", default="cld2-demo-bucket")
     s.add_argument("--prefix", default="releases")
-    s.add_argument("--alias", default="cld2alpha44")
+    s.add_argument("--alias", default="cld2demo")
     s.add_argument("--mc-path", default="mc")
     s.add_argument("--public-base-url", default="")
     s.add_argument("--preflight-only", action="store_true")
@@ -742,7 +742,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--max-mb", type=float, default=10.0)
 
 
-    s = sub.add_parser("bench-zsync-baseline", help="Run alpha45 zsync HTTP delta baseline")
+    s = sub.add_parser("bench-zsync-baseline", help="Run zsync HTTP delta baseline")
     s.add_argument("--out-dir", required=True)
     s.add_argument("--file-size", default="64MiB")
     s.add_argument("--scenarios", default="normal,high-entropy,small-files,heavy-change")
@@ -766,9 +766,9 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--endpoint", default="", help="Optional MinIO/S3 endpoint for attached CLD2 matrix")
     s.add_argument("--access-key", default="")
     s.add_argument("--secret-key", default="")
-    s.add_argument("--bucket", default="cld2-alpha45-bucket")
+    s.add_argument("--bucket", default="cld2-demo-bucket")
     s.add_argument("--prefix", default="releases")
-    s.add_argument("--alias", default="cld2alpha45")
+    s.add_argument("--alias", default="cld2demo")
     s.add_argument("--mc-path", default="mc")
     s.add_argument("--public-base-url", default="")
     s.add_argument("--preflight-only", action="store_true")
@@ -787,7 +787,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--min-mb", type=float, default=100.0)
     s.add_argument("--apply", action="store_true", help="Actually delete matching files. Without this flag the command is a dry-run.")
 
-    s = sub.add_parser("bench-hybrid-planner", help="Run alpha28 codec-aware hybrid planner: fixed/FastCDC across codecs plus tar.zst/external fallbacks")
+    s = sub.add_parser("bench-hybrid-planner", help="Run codec-aware hybrid planner: fixed/FastCDC across codecs plus tar.zst/external fallbacks")
     s.add_argument("--old-dir", required=True)
     s.add_argument("--new-dir", required=True)
     s.add_argument("--out-dir", required=True)
@@ -808,7 +808,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--download-tolerance-ratio", type=float, default=0.10)
     s.add_argument("--download-tolerance-bytes", type=int, default=268435456)
 
-    s = sub.add_parser("bench-heavy-change", help="Run alpha28 heavy-change guardrail matrix with optional tar.zst baselines")
+    s = sub.add_parser("bench-heavy-change", help="Run heavy-change guardrail matrix with optional tar.zst baselines")
     s.add_argument("--out-dir", required=True)
     s.add_argument("--file-size", default="128MiB")
     s.add_argument("--change-ratios", default="1%,5%,10%,25%")
@@ -820,7 +820,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--cost-per-gb", type=float, default=0.05)
     s.add_argument("--currency", default="USD")
 
-    s = sub.add_parser("bench-largefile-variants", help="Run alpha28 synthetic guardrail variants: middle insert, localized overwrite, random rewrite")
+    s = sub.add_parser("bench-largefile-variants", help="Run synthetic guardrail variants: middle insert, localized overwrite, random rewrite")
     s.add_argument("--out-dir", required=True)
     s.add_argument("--variants", default="middle-insert,localized-overwrite,random-rewrite-1pct")
     s.add_argument("--profiles", default="large-file-balanced")

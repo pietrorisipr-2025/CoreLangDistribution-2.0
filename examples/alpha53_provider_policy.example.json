@@ -1,0 +1,9 @@
+{
+  "schema": "CLD2/alpha53_provider_policy",
+  "code_baseline": "2.0.0-alpha50.2",
+  "benchmark_milestone": "alpha53",
+  "require_ok": true,
+  "require_digest_ok": true,
+  "require_audit_install_ok": true,
+  "expected_sha256": "REPLACE_WITH_TRUSTED_EXPECTED_SHA256"
+}

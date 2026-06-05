@@ -1,67 +1,48 @@
-# CLD2 alpha24 CLI notes
+# CLD2 CLI notes
 
-## Important commands
-
-```bash
-python3 cld2.py selftest
-python3 cld2.py dist-check . --run-selftest
-python3 cld2.py bench-real --help
-python3 cld2.py bench-fastcdc-tune --help
-python3 cld2.py bench-largefile-variants --help
-```
-
-## Large-file tuning
+After local installation:
 
 ```bash
-python3 cld2.py bench-fastcdc-tune \
-  --old-dir OLD \
-  --new-dir NEW \
-  --out-dir REPORT \
-  --profiles large-file-small,large-file-balanced,large-file-large \
-  --codec raw \
-  --file-level-tar-zstd-bytes 12748252690 \
-  --full-tar-zstd-v2-bytes 12748230610
+python -m pip install -e .
+cld2 --help
 ```
 
-The external baseline options are for reusing already-measured heavy tar.zst baselines instead of regenerating them.
+From a source checkout without installation:
 
-## Large-file default
-
-`--profile large-file` now uses the alpha24 recommended balanced preset:
-
-```text
-128 KiB / 512 KiB / 2 MiB, stride 8
+```bash
+python cld2.py --help
 ```
 
-Use explicit profiles to explore the trade-off:
+## Core commands
 
-```text
-large-file-small     64 KiB / 256 KiB / 1 MiB, stride 4
-large-file-balanced  128 KiB / 512 KiB / 2 MiB, stride 8
-large-file-large     256 KiB / 1 MiB / 4 MiB, stride 16
+```bash
+cld2 selftest
+cld2 dist-check . --run-selftest
+cld2 pack INPUT_DIR --out release.cldrepo --release-id demo --release-seq 1 --force
+cld2 inspect release.cldrepo
+cld2 verify release.cldrepo --deep
+cld2 fetch release.cldrepo --install install_dir --cache cache_dir
+cld2 audit-install release.cldrepo --install install_dir
+cld2 diff old.cldrepo new.cldrepo --out diff.json
 ```
 
-## alpha29 cost-aware scenarios
+## Release-candidate verification
 
-`bench-cost-aware-scenarios` runs the hybrid planner once and rescales the measured candidates for internal/public/massive download counts. It also reports break-even download thresholds and can create a report-only light ZIP.
-
-`make-light-zip` creates a report-only ZIP from an existing benchmark directory while preserving relative paths.
-
-`cleanup-heavy-artifacts` lists generated heavy artifacts in dry-run mode by default; pass `--apply` to delete them.
-
-
-## alpha30 review ZIP
-
-```powershell
-python .\cld2.py make-review-zip `
-  --src-dir REPORT_DIR `
-  --zip-out REPORT_REVIEW.zip
+```bash
+python scripts/verify_release.py --fast
+python scripts/verify_release.py
 ```
 
-For scenario planner runs, add:
+`--fast` checks the manifest, imports and distribution hygiene. The full run also executes the embedded self-tests and small smoke demo.
 
-```powershell
---make-review-zip
+## Benchmark/report commands
+
+```bash
+cld2 bench-real --help
+cld2 bench-fastcdc-tune --help
+cld2 bench-largefile-variants --help
+cld2 bench-cost-aware-planner --help
+cld2 render-report --help
 ```
 
-Use review ZIPs for AI/human handoff. They exclude generated repo internals, pack files and low-value metadata.
+Benchmark commands are research/development tools. Treat their results as workload-specific measurements, not universal performance claims.

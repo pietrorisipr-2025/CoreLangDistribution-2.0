@@ -1,0 +1,63 @@
+{
+  "code_baseline": "2.0.0-alpha50.2",
+  "created_at": "2026-06-05T11:09:48Z",
+  "integration_milestone": "alpha56.1",
+  "legacy_string_scan": [
+    {
+      "count": 0,
+      "hits": [],
+      "pattern": "2.0-alpha32"
+    },
+    {
+      "count": 0,
+      "hits": [],
+      "pattern": "2.0.0-alpha32"
+    },
+    {
+      "count": 0,
+      "hits": [],
+      "pattern": "2.0-2.0.0-alpha50.2"
+    }
+  ],
+  "ok": true,
+  "schema": "CLD2/alpha56_1_polish_test_results",
+  "tests": {
+    "dist_check_run_selftest": {
+      "cmd": [
+        "python",
+        "cld2.py",
+        "dist-check",
+        ".",
+        "--run-selftest"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "seconds": 1.657,
+      "stderr_tail": "",
+      "stdout_tail": "he\",\n              \"chunk_count\": 7,\n              \"index_file\": \"/tmp/cld2-alpha24-selftest-aji1imoh/cache/.cld2_cache_index.json\",\n              \"ok\": true,\n              \"prune_bad\": false,\n              \"total_raw_bytes\": 135758\n            },\n            \"before\": {\n              \"bad_entries\": 0,\n              \"bad_entry_details\": [],\n              \"cache_dir\": \"/tmp/cld2-alpha24-selftest-aji1imoh/cache\",\n              \"chunk_count\": 7,\n              \"index_file\": \"/tmp/cld2-alpha24-selftest-aji1imoh/cache/.cld2_cache_index.json\",\n              \"ok\": true,\n              \"prune_bad\": true,\n              \"total_raw_bytes\": 135758\n            },\n            \"cache_dir\": \"/tmp/cld2-alpha24-selftest-aji1imoh/cache\",\n            \"mode\": \"index-only\",\n            \"ok\": true,\n            \"removed_bytes\": 0,\n            \"removed_chunks\": 0\n          },\n          \"cache_index\": {\n            \"bad_entries\": 0,\n            \"bad_entry_details\": [],\n            \"cache_dir\": \"/tmp/cld2-alpha24-selftest-aji1imoh/cache\",\n            \"chunk_count\": 7,\n            \"index_file\": \"/tmp/cld2-alpha24-selftest-aji1imoh/cache/.cld2_cache_index.json\",\n            \"ok\": true,\n            \"prune_bad\": false,\n            \"total_raw_bytes\": 135758\n          },\n          \"doctor_ok\": true,\n          \"name\": \"cache-and-doctor\",\n          \"ok\": true\n        },\n        {\n          \"name\": \"ed25519-trusted-root\",\n          \"ok\": true,\n          \"trust\": {\n            \"errors\": [],\n            \"ok\": true,\n            \"policy\": {\n              \"allowed_mirrors\": [],\n              \"enforce_release_expiry\": true,\n              \"min_release_seq\": 2,\n              \"require_signature\": true\n            },\n            \"release_expires_at\": null,\n            \"release_id\": \"selftest\",\n            \"release_seq\": 2,\n            \"release_time\": {\n              \"error\": null,\n              \"now\": \"2026-06-05T11:09:51.792158Z\",\n              \"ok\": true\n            },\n            \"root_file\": \"/tmp/cld2-alpha24-selftest-aji1imoh/trusted_root.json\",\n            \"root_id\": \"selftest-root\",\n            \"root_time\": {\n              \"error\": null,\n              \"now\": \"2026-06-05T11:09:51.792146Z\",\n              \"ok\": true\n            },\n            \"signature\": {\n              \"algorithm\": \"ed25519\",\n              \"error\": null,\n              \"key_id\": \"7c693cabce66005f\",\n              \"ok\": true,\n              \"signed_root_hash\": \"2c5b146c2c509f4430c015c4bd1c463490192776453705216e0c43db8c3d61e4\"\n            },\n            \"trusted_key_count\": 1\n          }\n        },\n        {\n          \"actual_error\": \"refusing rollback: installed release_seq=2, target release_seq=1; pass allow_downgrade to override\",\n          \"expected_error\": \"rollback\",\n          \"name\": \"rollback-guard\",\n          \"ok\": true\n        }\n      ],\n      \"version\": \"2.0.0-alpha50.2\",\n      \"workdir\": null\n    },\n    \"total_bytes\": 1273152,\n    \"version\": \"2.0.0-alpha50.2\"\n  },\n  \"errors\": [],\n  \"ok\": true,\n  \"warnings\": []\n}\n"
+    },
+    "selftest": {
+      "cmd": [
+        "python",
+        "cld2.py",
+        "selftest"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "seconds": 1.514,
+      "stderr_tail": "",
+      "stdout_tail": "   \"seeded_chunks\": 0,\n          \"seeded_raw_bytes\": 0,\n          \"signature_checked\": false,\n          \"trusted_root\": null,\n          \"trusted_root_checked\": false,\n          \"trusted_root_sources\": null\n        },\n        \"ok\": true,\n        \"repaired\": true\n      }\n    },\n    {\n      \"cache_gc\": {\n        \"after\": {\n          \"bad_entries\": 0,\n          \"bad_entry_details\": [],\n          \"cache_dir\": \"/tmp/cld2-alpha24-selftest-fg3sbsh1/cache\",\n          \"chunk_count\": 7,\n          \"index_file\": \"/tmp/cld2-alpha24-selftest-fg3sbsh1/cache/.cld2_cache_index.json\",\n          \"ok\": true,\n          \"prune_bad\": false,\n          \"total_raw_bytes\": 135758\n        },\n        \"before\": {\n          \"bad_entries\": 0,\n          \"bad_entry_details\": [],\n          \"cache_dir\": \"/tmp/cld2-alpha24-selftest-fg3sbsh1/cache\",\n          \"chunk_count\": 7,\n          \"index_file\": \"/tmp/cld2-alpha24-selftest-fg3sbsh1/cache/.cld2_cache_index.json\",\n          \"ok\": true,\n          \"prune_bad\": true,\n          \"total_raw_bytes\": 135758\n        },\n        \"cache_dir\": \"/tmp/cld2-alpha24-selftest-fg3sbsh1/cache\",\n        \"mode\": \"index-only\",\n        \"ok\": true,\n        \"removed_bytes\": 0,\n        \"removed_chunks\": 0\n      },\n      \"cache_index\": {\n        \"bad_entries\": 0,\n        \"bad_entry_details\": [],\n        \"cache_dir\": \"/tmp/cld2-alpha24-selftest-fg3sbsh1/cache\",\n        \"chunk_count\": 7,\n        \"index_file\": \"/tmp/cld2-alpha24-selftest-fg3sbsh1/cache/.cld2_cache_index.json\",\n        \"ok\": true,\n        \"prune_bad\": false,\n        \"total_raw_bytes\": 135758\n      },\n      \"doctor_ok\": true,\n      \"name\": \"cache-and-doctor\",\n      \"ok\": true\n    },\n    {\n      \"name\": \"ed25519-trusted-root\",\n      \"ok\": true,\n      \"trust\": {\n        \"errors\": [],\n        \"ok\": true,\n        \"policy\": {\n          \"allowed_mirrors\": [],\n          \"enforce_release_expiry\": true,\n          \"min_release_seq\": 2,\n          \"require_signature\": true\n        },\n        \"release_expires_at\": null,\n        \"release_id\": \"selftest\",\n        \"release_seq\": 2,\n        \"release_time\": {\n          \"error\": null,\n          \"now\": \"2026-06-05T11:09:50.141260Z\",\n          \"ok\": true\n        },\n        \"root_file\": \"/tmp/cld2-alpha24-selftest-fg3sbsh1/trusted_root.json\",\n        \"root_id\": \"selftest-root\",\n        \"root_time\": {\n          \"error\": null,\n          \"now\": \"2026-06-05T11:09:50.141248Z\",\n          \"ok\": true\n        },\n        \"signature\": {\n          \"algorithm\": \"ed25519\",\n          \"error\": null,\n          \"key_id\": \"1009749850a6f3e1\",\n          \"ok\": true,\n          \"signed_root_hash\": \"58c9d8578ac6fb35e247169770fdecf6bab73ef97eefa82f42da88d0270df4ea\"\n        },\n        \"trusted_key_count\": 1\n      }\n    },\n    {\n      \"actual_error\": \"refusing rollback: installed release_seq=2, target release_seq=1; pass allow_downgrade to override\",\n      \"expected_error\": \"rollback\",\n      \"name\": \"rollback-guard\",\n      \"ok\": true\n    }\n  ],\n  \"version\": \"2.0.0-alpha50.2\",\n  \"workdir\": null\n}\n"
+    },
+    "smoke_test": {
+      "cmd": [
+        "python",
+        "scripts/smoke_test.py"
+      ],
+      "ok": true,
+      "returncode": 0,
+      "seconds": 10.772,
+      "stderr_tail": "",
+      "stdout_tail": "count\": 1\n      }\n    },\n    {\n      \"actual_error\": \"refusing rollback: installed release_seq=2, target release_seq=1; pass allow_downgrade to override\",\n      \"expected_error\": \"rollback\",\n      \"name\": \"rollback-guard\",\n      \"ok\": true\n    }\n  ],\n  \"version\": \"2.0.0-alpha50.2\",\n  \"workdir\": null\n}\n+ /opt/pyvenv/bin/python /mnt/data/alpha56_1_work/CLD2_ALPHA56_GITHUB_REPO_CANDIDATE/examples/small_demo/make_demo_data.py\n+ /opt/pyvenv/bin/python cld2.py pack /mnt/data/alpha56_1_work/CLD2_ALPHA56_GITHUB_REPO_CANDIDATE/examples/small_demo/release_v1 --out /mnt/data/alpha56_1_work/CLD2_ALPHA56_GITHUB_REPO_CANDIDATE/examples/small_demo/release_v1.cldrepo --release-id demo --release-seq 1 --force\n+ /opt/pyvenv/bin/python cld2.py pack /mnt/data/alpha56_1_work/CLD2_ALPHA56_GITHUB_REPO_CANDIDATE/examples/small_demo/release_v2 --out /mnt/data/alpha56_1_work/CLD2_ALPHA56_GITHUB_REPO_CANDIDATE/examples/small_demo/release_v2.cldrepo --release-id demo --release-seq 2 --force\n+ /opt/pyvenv/bin/python cld2.py diff /mnt/data/alpha56_1_work/CLD2_ALPHA56_GITHUB_REPO_CANDIDATE/examples/small_demo/release_v1.cldrepo /mnt/data/alpha56_1_work/CLD2_ALPHA56_GITHUB_REPO_CANDIDATE/examples/small_demo/release_v2.cldrepo --out /mnt/data/alpha56_1_work/CLD2_ALPHA56_GITHUB_REPO_CANDIDATE/examples/small_demo/diff.json\n+ /opt/pyvenv/bin/python cld2.py fetch /mnt/data/alpha56_1_work/CLD2_ALPHA56_GITHUB_REPO_CANDIDATE/examples/small_demo/release_v2.cldrepo --install /mnt/data/alpha56_1_work/CLD2_ALPHA56_GITHUB_REPO_CANDIDATE/examples/small_demo/install_v2 --cache /mnt/data/alpha56_1_work/CLD2_ALPHA56_GITHUB_REPO_CANDIDATE/examples/small_demo/cache\n+ /opt/pyvenv/bin/python cld2.py audit-install /mnt/data/alpha56_1_work/CLD2_ALPHA56_GITHUB_REPO_CANDIDATE/examples/small_demo/release_v2.cldrepo --install /mnt/data/alpha56_1_work/CLD2_ALPHA56_GITHUB_REPO_CANDIDATE/examples/small_demo/install_v2\n+ /opt/pyvenv/bin/python cld2.py selftest\nSmoke test OK. Diff summary:\n{\n  \"added_chunks\": 4,\n  \"changed_paths_sample\": [\n    \"config.json\",\n    \"data.txt\",\n    \"hello.txt\",\n    \"new_file.txt\"\n  ],\n  \"chunk_reuse_ratio\": 0.0,\n  \"download_required_pack_bytes\": 116,\n  \"download_required_raw_bytes\": 4181,\n  \"estimated_raw_chunk_saved_ratio_vs_file_level_raw\": 0.0,\n  \"estimated_raw_chunk_saved_vs_file_level_raw_bytes\": 0,\n  \"estimated_saved_ratio_vs_file_level_raw\": 0.972255,\n  \"estimated_saved_ratio_vs_full_stored\": 0.0,\n  \"estimated_saved_vs_file_level_raw_bytes\": 4065,\n  \"estimated_saved_vs_full_stored_bytes\": 0,\n  \"file_level_added_files\": 1,\n  \"file_level_changed_files\": 4,\n  \"file_level_raw_download_bytes\": 4181,\n  \"file_level_removed_files\": 0,\n  \"file_level_unchanged_files\": 0,\n  \"logical_size_new\": 4181,\n  \"new_release_id\": \"demo\",\n  \"new_release_seq\": 2,\n  \"new_unique_chunks\": 4,\n  \"old_release_id\": \"demo\",\n  \"old_release_seq\": 1,\n  \"old_unique_chunks\": 3,\n  \"raw_unique_size_new\": 4181,\n  \"removed_chunks\": 3,\n  \"removed_paths_sample\": [],\n  \"reused_chunks\": 0,\n  \"stored_size_new\": 116\n}\n"
+    }
+  }
+}
