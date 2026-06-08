@@ -19,6 +19,7 @@ python cld2.py --help
 cld2 selftest
 cld2 dist-check . --run-selftest
 cld2 pack INPUT_DIR --out release.cldrepo --release-id demo --release-seq 1 --force
+cld2 profile-validate docs/profiles/amd-rdna-extracted-fixed-balanced.json
 cld2 inspect release.cldrepo
 cld2 verify release.cldrepo --deep
 cld2 fetch release.cldrepo --install install_dir --cache cache_dir
@@ -39,10 +40,24 @@ python scripts/verify_release.py
 
 ```bash
 cld2 bench-real --help
+cld2 bench-real --old-dir old --new-dir new --out-dir results --profile-file docs/profiles/amd-rdna-extracted-fixed-balanced.json
 cld2 bench-fastcdc-tune --help
 cld2 bench-largefile-variants --help
 cld2 bench-cost-aware-planner --help
+cld2 make-review-zip --src-dir results --zip-out results_REVIEW.zip --max-mb 10
 cld2 render-report --help
 ```
 
 Benchmark commands are research/development tools. Treat their results as workload-specific measurements, not universal performance claims.
+
+## JSON user profiles
+
+Alpha56.3 supports JSON profile files for reusable chunker/codec settings:
+
+```bash
+cld2 profile-validate docs/profiles/amd-rdna-extracted-fixed-balanced.json
+cld2 profile-show docs/profiles/amd-rdna-extracted-fixed-balanced.json
+cld2 pack INPUT_DIR --out release.cldrepo --profile-file docs/profiles/amd-rdna-extracted-fixed-balanced.json --force
+```
+
+For `pack`, `--profile-file` is rejected when combined with explicit chunker/codec/chunk-size options. For `bench-real`, `--profile-file` is rejected when combined with explicit `--profile`, `--chunker`, or `--codec`.

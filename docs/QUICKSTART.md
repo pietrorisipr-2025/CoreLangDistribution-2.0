@@ -29,7 +29,20 @@ Full check:
 python scripts/verify_release.py
 ```
 
-The full check runs manifest verification, import checks, `dist-check`, embedded self-tests and the small smoke demo.
+The full check runs manifest verification, import checks, `dist-check`, alpha56.3 profile/benchmark-tooling acceptance smoke tests, embedded self-tests and the small smoke demo.
+
+## Validate and use a JSON profile
+
+```bash
+cld2 profile-validate docs/profiles/amd-rdna-extracted-fixed-balanced.json
+cld2 pack path/to/release --out release.cldrepo --profile-file docs/profiles/amd-rdna-extracted-fixed-balanced.json --force
+```
+
+For a real old/new directory benchmark:
+
+```bash
+cld2 bench-real --old-dir old --new-dir new --out-dir results --profile-file docs/profiles/amd-rdna-extracted-fixed-balanced.json
+```
 
 ## Run the small demo
 

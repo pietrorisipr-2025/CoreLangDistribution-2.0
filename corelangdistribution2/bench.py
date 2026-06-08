@@ -21,6 +21,7 @@ from typing import Dict, Iterable, Tuple
 
 from .chunker import parse_size
 from .hashutil import sha256_file
+from .profiles import profile_metadata, profile_pack_options
 from .repo import audit_install, diff_repos, fetch_install, inspect_repo, make_repo, verify_repo
 from .server import RangeRequestHandler
 
@@ -519,6 +520,35 @@ def _method_key(run: dict) -> str:
     return str(run.get("method_label") or run.get("chunker") or "unknown")
 
 
+BEST_TRANSFER_SELECTION_RULE = "minimum download_required_pack_bytes; ties broken by lower total pack time then method name"
+
+
+def _run_pack_total_seconds(run: dict) -> float:
+    return float(run.get("pack_v1_seconds") or 0) + float(run.get("pack_v2_seconds") or 0)
+
+
+def _run_download_pack_bytes(run: dict) -> int:
+    return int(run.get("diff", {}).get("download_required_pack_bytes") or 0)
+
+
+def best_transfer_comparison(runs: list[dict]) -> dict:
+    if not runs:
+        return {}
+    best = min(runs, key=lambda r: (_run_download_pack_bytes(r), _run_pack_total_seconds(r), str(r.get("chunker") or _method_key(r))))
+    fixed = next((r for r in runs if str(r.get("chunker")) == "fixed"), None)
+    best_bytes = _run_download_pack_bytes(best)
+    fixed_bytes = _run_download_pack_bytes(fixed) if fixed else None
+    saved_vs_fixed = max(0, int(fixed_bytes) - best_bytes) if fixed_bytes is not None else None
+    return {
+        "best_transfer_method": str(best.get("chunker") or _method_key(best)),
+        "best_transfer_bytes": best_bytes,
+        "fixed_download_bytes": fixed_bytes,
+        "best_saved_vs_fixed_bytes": saved_vs_fixed,
+        "best_saved_ratio_vs_fixed": round((saved_vs_fixed or 0) / fixed_bytes, 6) if fixed_bytes else 0.0,
+        "selection_rule": BEST_TRANSFER_SELECTION_RULE,
+    }
+
+
 def _fmt_cost(value: object, currency: str) -> str:
     try:
         v = float(value or 0)
@@ -751,6 +781,29 @@ def write_md_report(result: dict, path: str | Path) -> None:
                     continue
                 other_t = float(row['pack_total_seconds'] or 0)
                 lines += ["", f"{method_name} packing slowdown vs fixed: **{other_t / fixed_t:.2f}×**."]
+    comparison = result.get("comparison") or {}
+    if comparison.get("best_transfer_method"):
+        best_bytes = comparison.get("best_transfer_bytes")
+        baseline = result.get("baseline", {})
+        lines += [
+            "",
+            "## Best transfer method",
+            "",
+            "Selection rule: minimum `download_required_pack_bytes`; ties break by total pack time, then stable method name.",
+            "",
+            f"Best method: `{comparison.get('best_transfer_method')}`",
+            f"Best CLD2 update bytes: {best_bytes}",
+        ]
+        full_zstd = baseline.get("full_tar_zstd_v2_bytes")
+        file_zstd = baseline.get("file_level_tar_zstd_bytes")
+        if full_zstd:
+            saved = int(full_zstd) - int(best_bytes or 0)
+            ratio = (saved / int(full_zstd)) if int(full_zstd) else 0
+            lines.append(f"Compared with full v2 tar.zstd: {saved} bytes saved ({_pct(max(0, ratio))}).")
+        if file_zstd:
+            saved = int(file_zstd) - int(best_bytes or 0)
+            ratio = (saved / int(file_zstd)) if int(file_zstd) else 0
+            lines.append(f"Compared with changed-files tar.zstd: {saved} bytes saved ({_pct(max(0, ratio))}).")
     lines += [
         "",
         "## Baseline",
@@ -848,22 +901,7 @@ def run_bench(
     modes = _modes_for_profile(profile, chunker)
     results = [_run_one(out, v1, v2, mode, profile_opts=profile_opts, codec=codec) for mode in modes]
 
-    comparison = {}
-    by_mode = {r["chunker"]: r for r in results}
-    if "fixed" in by_mode and len(by_mode) > 1:
-        fixed_dl = by_mode["fixed"]["diff"]["download_required_pack_bytes"]
-        for other_name, other in by_mode.items():
-            if other_name == "fixed":
-                continue
-            other_dl = other["diff"]["download_required_pack_bytes"]
-            comparison = {
-                "optimized_method": other_name,
-                "optimized_download_bytes": other_dl,
-                "fixed_download_bytes": fixed_dl,
-                "optimized_saved_vs_fixed_bytes": max(0, fixed_dl - other_dl),
-                "optimized_saved_ratio_vs_fixed": round(max(0, fixed_dl - other_dl) / fixed_dl, 6) if fixed_dl else 0,
-            }
-            break
+    comparison = best_transfer_comparison(results)
 
     result = {
         "schema": "CoreLangDistribution/SyntheticBenchmark",
@@ -905,6 +943,8 @@ def run_real_bench(
     skip_heavy_baselines: bool = False,
     scenario_kind: str | None = None,
     scenario_note: str | None = None,
+    profile_file: str | Path | None = None,
+    profile_data: dict | None = None,
 ) -> dict:
     """Benchmark a user-provided old/new directory pair.
 
@@ -921,37 +961,33 @@ def run_real_bench(
     if out.exists():
         shutil.rmtree(out)
     out.mkdir(parents=True)
-    profile_opts = _profile_values(profile)
+    if profile_data:
+        profile_opts = profile_pack_options(profile_data)
+        profile = str(profile_data["name"])
+        chunker = str(profile_opts["chunker"])
+        codec = str(profile_opts["codec"])
+    else:
+        profile_opts = _profile_values(profile)
     baseline = _baseline_sizes(v1, v2, out, skip_heavy_baselines=skip_heavy_baselines)
     scenario_metadata = _real_pair_metadata(v1, v2)
     if scenario_kind:
         scenario_metadata["scenario_kind"] = scenario_kind
     if scenario_note:
         scenario_metadata["scenario_note"] = scenario_note
+    if profile_data:
+        scenario_metadata["profile_name"] = profile_data.get("name")
+        scenario_metadata["profile_file"] = Path(profile_file or profile_data.get("_profile_file", "")).name
+        scenario_metadata["profile"] = profile_metadata(profile_data, profile_file)
     modes = _modes_for_profile(profile, chunker)
     results = [_run_one(out, v1, v2, mode, profile_opts=profile_opts, codec=codec) for mode in modes]
-    comparison = {}
-    by_mode = {r["chunker"]: r for r in results}
-    if "fixed" in by_mode and len(by_mode) > 1:
-        fixed_dl = by_mode["fixed"]["diff"]["download_required_pack_bytes"]
-        for other_name, other in by_mode.items():
-            if other_name == "fixed":
-                continue
-            other_dl = other["diff"]["download_required_pack_bytes"]
-            comparison = {
-                "optimized_method": other_name,
-                "optimized_download_bytes": other_dl,
-                "fixed_download_bytes": fixed_dl,
-                "optimized_saved_vs_fixed_bytes": max(0, fixed_dl - other_dl),
-                "optimized_saved_ratio_vs_fixed": round(max(0, fixed_dl - other_dl) / fixed_dl, 6) if fixed_dl else 0,
-            }
-            break
+    comparison = best_transfer_comparison(results)
     result = {
         "schema": "CoreLangDistribution/RealPairBenchmark",
         "version": "2.0.0-alpha50.2",
         "scenario": scenario_name,
         "profile": profile,
         "profile_options": profile_opts,
+        "profile_file": str(profile_file) if profile_file else None,
         "codec": codec,
         "old_dir": str(v1),
         "new_dir": str(v2),
@@ -7700,12 +7736,23 @@ def _is_review_zip_candidate(rel: Path) -> bool:
     # Never include generated repository internals or pack metadata in review zips.
     if any(part.endswith(".cldrepo") for part in parts):
         return False
+    if any(part.endswith(".egg-info") for part in parts):
+        return False
+    if "__pycache__" in parts:
+        return False
     if "packs" in parts or "cache" in parts or "install" in parts:
         return False
     if name in {"chunks.idx.json", "files.idx.json", "release.json", "signatures.json"}:
         return False
+    if suffix in {".sha256", ".log", ".txt", ".html"}:
+        return True
     # Include root/summary scenario planner artifacts and hybrid planner summary only.
     allowed_exact = {
+        "bench_real_result.json",
+        "bench_real_summary.csv",
+        "bench_real_technical_report.md",
+        "cld2_savings_business_report.md",
+        "review_file_manifest.csv",
         "cost_aware_scenarios_result.json",
         "cost_aware_scenarios_report.md",
         "cost_aware_planner_result.json",
@@ -7774,7 +7821,10 @@ def _is_review_zip_candidate(rel: Path) -> bool:
         "signed_url_pilot_summary.csv",
         "signed_url_policy.json",
     }
+    allowed_exact = {x.lower() for x in allowed_exact}
     if name in allowed_exact:
+        return True
+    if name.endswith("_metadata.csv") or name.endswith("_input_metadata.csv"):
         return True
     if name.endswith("_cost_aware_result.json") or name.endswith("_cost_aware_summary.csv"):
         return True
@@ -7793,6 +7843,7 @@ def make_review_zip(src_dir: str | Path, zip_out: str | Path, *, max_mb: float =
     files: list[Path] = []
     skipped_large: list[dict] = []
     skipped_nonreview = 0
+    warnings: list[str] = []
     if not src.exists():
         raise FileNotFoundError(src)
     for p in src.rglob("*"):
@@ -7810,17 +7861,41 @@ def make_review_zip(src_dir: str | Path, zip_out: str | Path, *, max_mb: float =
     out.parent.mkdir(parents=True, exist_ok=True)
     if out.exists():
         out.unlink()
+    if not files:
+        warnings.append("review zip contains no files")
+        return {
+            "ok": False,
+            "schema": "CoreLangDistribution/ReviewZip",
+            "version": "2.0.0-alpha50.2",
+            "src_dir": str(src),
+            "zip_out": str(out),
+            "included_files": 0,
+            "excluded_files": skipped_nonreview + len(skipped_large),
+            "files_included": 0,
+            "skipped_large": skipped_large,
+            "skipped_nonreview_files": skipped_nonreview,
+            "warnings": warnings,
+            "bytes": 0,
+            "policy": "high-value JSON/CSV/Markdown reports only; excludes .cldrepo internals, packs, chunks.idx.json, files.idx.json and release.json",
+        }
     with zipfile.ZipFile(out, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+        manifest_rows = ["path,bytes,sha256"]
         for p in sorted(files):
-            zf.write(p, p.relative_to(src).as_posix())
+            rel = p.relative_to(src).as_posix()
+            zf.write(p, rel)
+            manifest_rows.append(f"{rel},{p.stat().st_size},{sha256_file(p)}")
+        zf.writestr("REVIEW_FILE_MANIFEST.csv", "\n".join(manifest_rows) + "\n")
     manifest = {
         "schema": "CoreLangDistribution/ReviewZip",
         "version": "2.0.0-alpha50.2",
         "src_dir": str(src),
         "zip_out": str(out),
+        "included_files": len(files) + 1,
+        "excluded_files": skipped_nonreview + len(skipped_large),
         "files_included": len(files),
         "skipped_large": skipped_large,
         "skipped_nonreview_files": skipped_nonreview,
+        "warnings": warnings,
         "bytes": out.stat().st_size if out.exists() else 0,
         "policy": "high-value JSON/CSV/Markdown reports only; excludes .cldrepo internals, packs, chunks.idx.json, files.idx.json and release.json",
     }

@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.0.0a56.post3 / alpha56.3 - benchmark tooling and user profiles
+
+- Fixed `make-review-zip` for `bench-real` outputs.
+- Fixed best-transfer-method reporting.
+- Added JSON user profile support.
+- Added built-in example profiles.
+- Added real benchmark docs and claim boundary.
+- Kept core baseline `2.0.0-alpha50.2`.
+
 ## 2.0.0a56.post2 - alpha56.2.1 packaging hotfix
 
 - Fixes `pyproject.toml` package version so `python -m pip install -e .` uses a valid PEP 440 version.

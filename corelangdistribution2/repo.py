@@ -690,6 +690,7 @@ def make_repo(
     force: bool = False,
     expires_at: str | None = None,
     not_before: str | None = None,
+    profile_metadata: dict[str, Any] | None = None,
 ) -> Dict[str, Any]:
     root = Path(input_dir).resolve()
     out = Path(out_repo).resolve()
@@ -797,6 +798,8 @@ def make_repo(
             "storage_ratio": round(stored_bytes / logical_size, 6) if logical_size else 0,
         },
     }
+    if profile_metadata:
+        release["profile"] = dict(profile_metadata)
     write_json(out / "files.idx.json", files)
     write_json(out / "chunks.idx.json", chunk_list)
     write_json(out / "release.json", release)

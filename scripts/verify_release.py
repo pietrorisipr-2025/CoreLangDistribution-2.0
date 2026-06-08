@@ -76,6 +76,7 @@ def import_check() -> dict:
         "corelangdistribution2.http_range",
         "corelangdistribution2.selftest",
         "corelangdistribution2.release",
+        "corelangdistribution2.profiles",
     ]
     code = "import importlib; [importlib.import_module(m) for m in " + repr(modules) + "]"
     return run([sys.executable, "-c", code], label="import-check")
@@ -96,6 +97,7 @@ def main() -> int:
     ]
 
     if not args.fast:
+        checks.append(run([sys.executable, "scripts/alpha56_3_acceptance_smoke.py"], label="alpha56.3-acceptance-smoke"))
         checks.append(run([sys.executable, "cld2.py", "dist-check", ".", "--run-selftest"], label="dist-check-selftest"))
         checks.append(run([sys.executable, "scripts/smoke_test.py"], label="smoke-test"))
 

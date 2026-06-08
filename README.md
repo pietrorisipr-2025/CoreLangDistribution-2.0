@@ -1,9 +1,9 @@
 # CoreLangDistribution 2.0 (CLD2)
 
-**Status:** alpha / public review candidate 56.2.1  
-**Python package version:** `2.0.0a56.post2`  
-**Implementation baseline:** `2.0.0-alpha50.2` core; alpha56.2.1 packaging hotfix  
-**Generated:** 2026-06-05
+**Status:** alpha / public review candidate 56.3  
+**Python package version:** `2.0.0a56.post3`  
+**Implementation baseline:** `2.0.0-alpha50.2` core; alpha56.3 benchmark tooling/profile/docs patch  
+**Generated:** 2026-06-07
 
 CLD2 is an experimental **cost-aware warm-update distribution planner**. It packages versioned content into chunked, range-readable repositories so clients with an existing release/cache can reuse chunks instead of downloading the whole next release.
 
@@ -64,7 +64,17 @@ CLD2 is not:
 - enterprise-ready;
 - a claim that CLD2 always beats existing tools.
 
-## Current validated result
+## Real benchmark status
+
+Post-alpha56.2.1 real benchmarks found a mixed but useful pattern:
+
+- strongest positive: AMD RDNA extracted driver payload, where CLD2 fixed-mode warm update was smaller than both full v2 tar.zstd and changed-files tar.zstd;
+- moderate positive: LibreOffice extracted folders, where CLD2 beat full v2 tar.zstd but not changed-files tar.zstd;
+- negative controls: melonDS single-executable releases and SDSS FITS DR11->DR12 did not produce a competitive CLD2 update.
+
+These results support a targeted structured-payload warm-update claim, not a universal updater/compressor claim. See [`docs/REAL_BENCHMARKS_ALPHA56_3.md`](docs/REAL_BENCHMARKS_ALPHA56_3.md), [`docs/BENCHMARK_CLAIM_BOUNDARY_ALPHA56_3.md`](docs/BENCHMARK_CLAIM_BOUNDARY_ALPHA56_3.md), and [`docs/BENCHMARK_TOOLING_NOTES_ALPHA56_3.md`](docs/BENCHMARK_TOOLING_NOTES_ALPHA56_3.md).
+
+## Historical validated result
 
 The strongest validated result is still the alpha45.8 same-run comparison against zsync. CLD2 wins clearly in high-reuse cases and is roughly equal in adversarial cases.
 
@@ -77,10 +87,25 @@ The strongest validated result is still the alpha45.8 same-run comparison agains
 
 See [`docs/BENCHMARKS.md`](docs/BENCHMARKS.md), [`docs/BENCHMARK_SUMMARY_UPDATED_ALPHA55.md`](docs/BENCHMARK_SUMMARY_UPDATED_ALPHA55.md) and [`docs/CLAIM_BOUNDARY_ALPHA56.md`](docs/CLAIM_BOUNDARY_ALPHA56.md).
 
+## User-defined profiles
+
+CLD2 alpha56.3 supports JSON profile files for reusable chunker/codec settings.
+
+Example:
+
+```bash
+cld2 profile-validate docs/profiles/amd-rdna-extracted-fixed-balanced.json
+cld2 pack path/to/release --out release.cldrepo --profile-file docs/profiles/amd-rdna-extracted-fixed-balanced.json --force
+cld2 bench-real --old-dir old --new-dir new --out-dir results --profile-file docs/profiles/amd-rdna-extracted-fixed-balanced.json
+```
+
+Built-in examples live in [`docs/profiles/`](docs/profiles/). Alpha56.3 accepts JSON only and rejects unknown top-level profile keys.
+
 ## Common commands
 
 ```bash
 cld2 pack INPUT_DIR --out release.cldrepo --release-id demo --release-seq 1 --force
+cld2 profile-validate docs/profiles/amd-rdna-extracted-fixed-balanced.json
 cld2 inspect release.cldrepo
 cld2 verify release.cldrepo --deep
 cld2 fetch release.cldrepo --install install_dir --cache cache_dir
@@ -117,17 +142,9 @@ scripts/                 smoke, manifest and release verification helpers
 
 ## Public review notes
 
-Alpha56.2.1 is a packaging hotfix after the alpha56.2 readability/installability polish pass. It does not change the core transfer model or introduce new benchmark claims.
+Alpha56.3 replaces alpha56.2.1 for public review. It fixes benchmark tooling/reporting, adds JSON user-defined profiles, and documents real benchmark results. It does not change the core transfer model.
 
-Important version note: generated `.cldrepo` manifests may contain an internal repository-format `version` such as `2.0-alpha24`. That is a repository schema version, not the Python package version. The Python package version is the PEP 440 value `2.0.0a56.post2`; the core implementation baseline remains `2.0.0-alpha50.2`.
-
-## Support
-
-CLD2 is an independent alpha research/devtool project.
-
-If this work is useful to you, you can support it here:
-
-[Support CLD2 on Ko-fi](https://ko-fi.com/pietrorisi)
+Important version note: generated `.cldrepo` manifests may contain an internal repository-format `version` such as `2.0-alpha24`. That is a repository schema version, not the Python package version. The Python package version is the PEP 440 value `2.0.0a56.post3`; the core implementation baseline remains `2.0.0-alpha50.2`.
 
 ## License
 

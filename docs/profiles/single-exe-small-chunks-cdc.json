@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "name": "single-exe-small-chunks-cdc",
+  "description": "Small-chunk sensitivity profile for single executable drift. This is a diagnostic profile, not a recommended default.",
+  "chunker": "fastcdc",
+  "codec": "auto",
+  "chunk_min": "16KiB",
+  "chunk_avg": "64KiB",
+  "chunk_max": "256KiB",
+  "fastcdc_stride": 1,
+  "claim_boundary": "Diagnostic only. In alpha56.2.1 melonDS tests it found limited reuse but did not beat tar.zstd.",
+  "metadata": {
+    "benchmark_basis": "melonDS sensitivity tests",
+    "expected_pattern": "small traces of reuse, often not competitive",
+    "not_recommended_for": [
+      "default public distribution"
+    ]
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "name": "amd-rdna-extracted-fixed-balanced",
+  "description": "Fixed-chunk profile for structured extracted AMD RDNA driver payloads, based on alpha56.2.1 real benchmark results.",
+  "chunker": "fixed",
+  "codec": "auto",
+  "fixed_size": "1MiB",
+  "claim_boundary": "Useful for structured extracted driver payloads with cross-version reuse. Not for monolithic EXE installers.",
+  "metadata": {
+    "benchmark_basis": "AMD RDNA 25.8.1 to 25.9.1 extracted payload",
+    "expected_pattern": "structured multi-file payload with partial cross-version reuse",
+    "not_recommended_for": [
+      "monolithic EXE installers",
+      "MSI installers without extraction",
+      "single executable binary drift"
+    ]
+  }
+}

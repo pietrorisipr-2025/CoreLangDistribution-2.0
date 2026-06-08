@@ -23,6 +23,10 @@ REQUIRED_FILES = [
     "corelangdistribution2/__init__.py",
     "corelangdistribution2/repo.py",
     "corelangdistribution2/bench.py",
+    "corelangdistribution2/profiles.py",
+    "docs/REAL_BENCHMARKS_ALPHA56_3.md",
+    "docs/BENCHMARK_CLAIM_BOUNDARY_ALPHA56_3.md",
+    "docs/BENCHMARK_TOOLING_NOTES_ALPHA56_3.md",
 ]
 
 FORBIDDEN_SUFFIXES = {".pyc", ".pyo"}
@@ -121,6 +125,7 @@ def dist_check(root: str | Path = ".", *, run_tests: bool = False) -> dict[str, 
         "corelangdistribution2.http_range",
         "corelangdistribution2.selftest",
         "corelangdistribution2.release",
+        "corelangdistribution2.profiles",
     ]:
         try:
             importlib.import_module(mod)

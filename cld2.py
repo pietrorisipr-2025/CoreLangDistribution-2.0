@@ -9,6 +9,7 @@ from pathlib import Path
 
 from corelangdistribution2 import __version__
 from corelangdistribution2.bench import run_bench, run_bench_matrix, run_real_bench, run_fastcdc_tuning_matrix, run_largefile_variant_matrix, run_adaptive_policy_bench, run_standalone_baselines_bench, run_heavy_change_matrix, run_hybrid_planner_bench, run_cost_aware_planner_bench, run_cost_aware_scenarios_bench, run_corpus_bench, render_static_report, run_network_pilot, run_mirror_pilot, run_object_store_pilot, run_signed_url_pilot, run_minio_pilot, run_minio_robustness_pilot, run_minio_full_baseline_pilot, run_minio_cost_matrix_pilot, run_anti_cherrypick_report_pilot, run_github_report_pilot, run_comparison_harness_pilot, run_rsync_baseline_pilot, run_zsync_baseline_pilot, make_light_zip, make_review_zip, cleanup_heavy_artifacts, BENCH_SCENARIOS, BENCH_PROFILES
+from corelangdistribution2.profiles import load_profile, profile_metadata, profile_pack_options, profile_summary
 from corelangdistribution2.repo import audit_install, cache_gc, rebuild_cache_index, repair_install, doctor_install, create_patch_plan, diff_repos, extract_file, fetch_install, inspect_repo, keygen, make_repo, root_init, sign_repo, verify_repo, release_check
 from corelangdistribution2.server import serve
 from corelangdistribution2.selftest import run_selftest
@@ -17,6 +18,14 @@ from corelangdistribution2.release import beta_report, dist_check, write_json_re
 
 def emit(obj) -> None:
     print(json.dumps(obj, indent=2, sort_keys=True, ensure_ascii=False))
+
+
+def option_was_explicit(argv: list[str], *names: str) -> bool:
+    for arg in argv:
+        for name in names:
+            if arg == name or arg.startswith(name + "="):
+                return True
+    return False
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -38,7 +47,14 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--chunk-max", default="1MiB")
     s.add_argument("--fastcdc-stride", type=int, default=16, help="Candidate scan stride for fastcdc; lower values improve reuse but cost more CPU")
     s.add_argument("--codec", choices=["auto", "zstd", "zlib", "raw", "none"], default="auto")
+    s.add_argument("--profile-file", help="JSON user profile that sets chunker/codec/chunk-size options")
     s.add_argument("--force", action="store_true")
+
+    s = sub.add_parser("profile-validate", help="Validate a JSON user profile")
+    s.add_argument("profile_file")
+
+    s = sub.add_parser("profile-show", help="Validate and show a normalized JSON user profile")
+    s.add_argument("profile_file")
 
     s = sub.add_parser("inspect", help="Inspect a local or HTTP .cldrepo")
     s.add_argument("repo")
@@ -217,6 +233,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--skip-heavy-baselines", action="store_true", help="Skip tar.gz/tar.zst baselines; useful for huge single-file tests")
     s.add_argument("--scenario-kind", help="Optional scenario label, e.g. large-file-middle-insert or random-worstcase")
     s.add_argument("--scenario-note", help="Optional human-readable note stored in report metadata")
+    s.add_argument("--profile-file", help="JSON user profile used for this real benchmark")
 
     s = sub.add_parser("bench-fastcdc-tune", help="Run a large-file FastCDC tuning matrix on a real old/new pair")
     s.add_argument("--old-dir", required=True, help="Previous release/content directory")
@@ -833,12 +850,43 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
-    args = build_parser().parse_args(argv)
+    raw_argv = list(sys.argv[1:] if argv is None else argv)
+    args = build_parser().parse_args(raw_argv)
     try:
         if args.cmd == "pack":
-            emit(make_repo(args.input_dir, args.out, release_id=args.release_id, release_seq=args.release_seq, chunker=args.chunker,
-                           fixed_size=args.fixed_size, chunk_min=args.chunk_min, chunk_avg=args.chunk_avg,
-                           chunk_max=args.chunk_max, fastcdc_stride=args.fastcdc_stride, codec=args.codec, force=args.force, expires_at=args.expires_at, not_before=args.not_before))
+            pack_opts = {
+                "chunker": args.chunker,
+                "fixed_size": args.fixed_size,
+                "chunk_min": args.chunk_min,
+                "chunk_avg": args.chunk_avg,
+                "chunk_max": args.chunk_max,
+                "fastcdc_stride": args.fastcdc_stride,
+                "codec": args.codec,
+            }
+            pack_profile_metadata = None
+            if args.profile_file:
+                ambiguous = [
+                    "--chunker",
+                    "--fixed-size",
+                    "--chunk-min",
+                    "--chunk-avg",
+                    "--chunk-max",
+                    "--fastcdc-stride",
+                    "--codec",
+                ]
+                explicit = [name for name in ambiguous if option_was_explicit(raw_argv, name)]
+                if explicit:
+                    raise ValueError("--profile-file cannot be combined with explicit pack options: " + ", ".join(explicit))
+                user_profile = load_profile(args.profile_file)
+                pack_opts = profile_pack_options(user_profile)
+                pack_profile_metadata = profile_metadata(user_profile, args.profile_file)
+            emit(make_repo(args.input_dir, args.out, release_id=args.release_id, release_seq=args.release_seq, chunker=pack_opts["chunker"],
+                           fixed_size=pack_opts["fixed_size"], chunk_min=pack_opts["chunk_min"], chunk_avg=pack_opts["chunk_avg"],
+                           chunk_max=pack_opts["chunk_max"], fastcdc_stride=int(pack_opts["fastcdc_stride"]), codec=pack_opts["codec"], force=args.force, expires_at=args.expires_at, not_before=args.not_before, profile_metadata=pack_profile_metadata))
+        elif args.cmd == "profile-validate":
+            emit(profile_summary(load_profile(args.profile_file)))
+        elif args.cmd == "profile-show":
+            emit(profile_summary(load_profile(args.profile_file)))
         elif args.cmd == "inspect":
             emit(inspect_repo(args.repo))
         elif args.cmd == "verify":
@@ -909,7 +957,14 @@ def main(argv: list[str] | None = None) -> int:
             emit(r)
             return 0 if r.get("ok") else 2
         elif args.cmd == "bench-real":
-            emit(run_real_bench(args.old_dir, args.new_dir, args.out_dir, scenario_name=args.scenario_name, profile=args.profile, chunker=args.chunker, codec=args.codec, cost_per_gb=args.cost_per_gb, download_count=args.download_count, currency=args.currency, skip_heavy_baselines=args.skip_heavy_baselines, scenario_kind=args.scenario_kind, scenario_note=args.scenario_note))
+            user_profile = None
+            if args.profile_file:
+                ambiguous = ["--profile", "--chunker", "--codec"]
+                explicit = [name for name in ambiguous if option_was_explicit(raw_argv, name)]
+                if explicit:
+                    raise ValueError("--profile-file cannot be combined with explicit bench-real options: " + ", ".join(explicit))
+                user_profile = load_profile(args.profile_file)
+            emit(run_real_bench(args.old_dir, args.new_dir, args.out_dir, scenario_name=args.scenario_name, profile=args.profile, chunker=args.chunker, codec=args.codec, cost_per_gb=args.cost_per_gb, download_count=args.download_count, currency=args.currency, skip_heavy_baselines=args.skip_heavy_baselines, scenario_kind=args.scenario_kind, scenario_note=args.scenario_note, profile_file=args.profile_file, profile_data=user_profile))
         elif args.cmd == "bench-fastcdc-tune":
             emit(run_fastcdc_tuning_matrix(args.old_dir, args.new_dir, args.out_dir, profiles=args.profiles, codec=args.codec, scenario_name=args.scenario_name, cost_per_gb=args.cost_per_gb, download_count=args.download_count, currency=args.currency, include_fixed=not args.no_fixed, scenario_kind=args.scenario_kind, scenario_note=args.scenario_note, file_level_tar_zstd_bytes=args.file_level_tar_zstd_bytes, full_tar_zstd_v2_bytes=args.full_tar_zstd_v2_bytes, external_baseline_note=args.external_baseline_note))
         elif args.cmd == "bench-adaptive-policy":
@@ -925,7 +980,9 @@ def main(argv: list[str] | None = None) -> int:
         elif args.cmd == "make-light-zip":
             emit(make_light_zip(args.src_dir, args.zip_out, max_mb=args.max_mb))
         elif args.cmd == "make-review-zip":
-            emit(make_review_zip(args.src_dir, args.zip_out, max_mb=args.max_mb))
+            r = make_review_zip(args.src_dir, args.zip_out, max_mb=args.max_mb)
+            emit(r)
+            return 0 if r.get("ok") else 2
         elif args.cmd == "render-report":
             emit(render_static_report(args.src_dir, args.out_dir, title=args.title, make_review=args.make_review_zip, max_mb=args.max_mb))
         elif args.cmd == "bench-network-pilot":

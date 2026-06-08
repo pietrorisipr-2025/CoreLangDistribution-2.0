@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "corelangdistribution2-alpha"
-version = "2.0.0a56.post2"
+version = "2.0.0a56.post3"
 description = "Experimental cost-aware warm-update distribution planner"
 license = { text = "MIT" }
 requires-python = ">=3.10"
