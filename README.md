@@ -1,4 +1,4 @@
-# CoreLangDistribution 2.0 (CLD2)
+﻿# CoreLangDistribution 2.0 (CLD2)
 
 **Status:** alpha / public review candidate 56.3  
 **Python package version:** `2.0.0a56.post3`  
@@ -9,6 +9,13 @@ CLD2 is an experimental **cost-aware warm-update distribution planner**. It pack
 
 It is **not** a new compression algorithm, not a CDN/cloud product, and not a universal replacement for rsync, zsync, casync, OSTree, DVC, Docker/OCI or mature artifact distribution systems.
 
+## Support
+
+If CLD2 is useful to you, you can support independent development here:
+
+[Buy me a coffee / support me on Ko-fi](https://ko-fi.com/pietrorisi)
+
+Support is optional. CLD2 remains MIT licensed.
 ## Try it in 5 minutes
 
 Requirements:
@@ -159,3 +166,4 @@ python scripts/verify_release.py
 ```
 
 The alpha56.1 predecessor was checked with `selftest`, `dist-check --run-selftest`, and `scripts/smoke_test.py`; see `TEST_RESULTS_ALPHA56_1_POLISH.json`.
+
